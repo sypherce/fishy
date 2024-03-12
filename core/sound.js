@@ -7,7 +7,7 @@
  */
 function playMusic(filename) {
 	const music = new Howl({
-		src: [filename],
+		src: filename,
 		loop: true,
 	});
 	music.play();
@@ -20,7 +20,7 @@ function playMusic(filename) {
  */
 function playSound(filename) {
 	const sound = new Howl({
-		src: [filename],
+		src: filename,
 	});
 	sound.play();
 	return sound;
