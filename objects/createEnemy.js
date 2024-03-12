@@ -25,10 +25,10 @@ const createEnemy = async (x, y, width, height) => {
 		height = img.default.data[0].height;
 	}
 	const object = createObject('enemy', img, x, y, width, height);
-
 	object.speed = 3;
 	object.hp = 100;
 	object.eat = function (quality) {
+		playSound(`${DATA_PATH}/sounds/converted/chomp${randomNumber(2)}.ogg`);
 		this.hp += quality;
 		if (this.hp > 100) this.hp = 100;
 	};
@@ -45,8 +45,7 @@ const createEnemy = async (x, y, width, height) => {
 			this.handleRemoval();
 		} else if (this.state().hungry) {
 			const entryFound = this.moveTowardsNearestEntry('fish', 50);
-			if (entryFound) playSound(`${DATA_PATH}/sounds/converted/chomp${randomNumber(2)}.ogg`);
-			else this.moveToRandomLocation();
+			if (!entryFound) this.moveToRandomLocation();
 		} else {
 			this.moveToRandomLocation();
 		}
