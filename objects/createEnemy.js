@@ -1,6 +1,7 @@
 'use strict';
-import { DATA_PATH } from '../core/globals.js';
+import { DATA_PATH, randomNumber } from '../core/globals.js';
 import { loadSpriteSheet } from '../core/image.js';
+import { playSound } from '../core/sound.js';
 import createObject from './object.js';
 
 /**Creates a enemy object with the specified properties.
@@ -17,11 +18,7 @@ const createEnemy = async (x, y, width, height) => {
 	const rows = 2;
 	const columns = 10;
 	const img = {
-		default: {
-			data: await loadSpriteSheet(defaultFilename, rows, columns),
-			rows: rows,
-			columns: columns,
-		},
+		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
 	if (typeof width === 'undefined' || typeof height === 'undefined') {
 		width = img.default.data[0].width;
@@ -48,7 +45,8 @@ const createEnemy = async (x, y, width, height) => {
 			this.handleRemoval();
 		} else if (this.state().hungry) {
 			const entryFound = this.moveTowardsNearestEntry('fish', 50);
-			if (!entryFound) this.moveToRandomLocation();
+			if (entryFound) playSound(`${DATA_PATH}/sounds/converted/chomp${randomNumber(2)}.ogg`);
+			else this.moveToRandomLocation();
 		} else {
 			this.moveToRandomLocation();
 		}

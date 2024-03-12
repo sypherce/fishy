@@ -15,4 +15,10 @@ const context = ((parentCanvas) => {
 	return element;
 })(canvas);
 
-export { DATA_PATH, canvas, context };
+function randomNumber(max) {
+	const number = Math.floor(Math.random() * max) + 1;
+
+	return number === 1 ? '' : `${number}`;
+}
+
+export { DATA_PATH, canvas, context, randomNumber };

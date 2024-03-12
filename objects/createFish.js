@@ -1,6 +1,6 @@
 'use strict';
 import { entryArray } from '../core/entry.js';
-import { DATA_PATH } from '../core/globals.js';
+import { DATA_PATH, randomNumber } from '../core/globals.js';
 import { loadSpriteSheet } from '../core/image.js';
 import { playSound } from '../core/sound.js';
 import createMoney from './createMoney.js';
@@ -21,16 +21,8 @@ const createFish = async (x, y, width, height) => {
 	const rows = 5;
 	const columns = 10;
 	const img = {
-		default: {
-			data: await loadSpriteSheet(defaultFilename, rows, columns),
-			rows: rows,
-			columns: columns,
-		},
-		hungry: {
-			data: await loadSpriteSheet(hungryFilename, rows, columns),
-			rows: rows,
-			columns: columns,
-		},
+		default: await loadSpriteSheet(defaultFilename, rows, columns),
+		hungry: await loadSpriteSheet(hungryFilename, rows, columns),
 	};
 	if (typeof width === 'undefined' || typeof height === 'undefined') {
 		width = img.default.data[0].width;
@@ -42,11 +34,6 @@ const createFish = async (x, y, width, height) => {
 	object.moneyGenerationLevel = 0;
 	object.speed = 2;
 	object.eat = function (quality) {
-		function randomNumber(max) {
-			const number = Math.floor(Math.random() * max) + 1;
-
-			return number === 1 ? '' : `${number}`;
-		}
 		playSound(`${DATA_PATH}/sounds/SLURP${randomNumber(3)}.ogg`);
 		this.hp += quality;
 		if (this.hp > 100) this.hp = 100;
@@ -83,7 +70,7 @@ const createFish = async (x, y, width, height) => {
 		})();
 	};
 	object.getImage = function () {
-		if (object.state().hungry) return object.image.hungry;
+		if (object.state().starving) return object.image.hungry;
 
 		return object.image.default;
 	};

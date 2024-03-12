@@ -1,11 +1,12 @@
 'use strict';
 import { entryArray, entryIntersects } from './core/entry.js';
-import { DATA_PATH, canvas, context } from './core/globals.js';
+import { DATA_PATH, canvas, context, randomNumber } from './core/globals.js';
 import { applyAlphaMask, loadImage, loadSpriteSheet } from './core/image.js';
 import { playMusic, playSound } from './core/sound.js';
 import createEnemy from './objects/createEnemy.js';
 import createFish from './objects/createFish.js';
 import createFood from './objects/createFood.js';
+import createPlayOnce from './objects/createPlayOnce.js';
 import createStationary from './objects/createStationary.js';
 
 const init = (() => {
@@ -16,11 +17,6 @@ const init = (() => {
 	const buttonPositions = [18, 88, 144, 217, 290, 363, 436];
 	const buttonEnabled = [true, true, true, false, false, false, false];
 
-	function randomNumber(max) {
-		const number = Math.floor(Math.random() * max) + 1;
-
-		return number === 1 ? '' : `${number}`;
-	}
 	async function handleClick(event) {
 		const FOOD_COST = 25;
 
@@ -63,14 +59,19 @@ const init = (() => {
 			}
 			return;
 		}
-
-		// Handle clicked money
-		const money = entryIntersects('money', x, y);
-		if (money !== -1) {
-			const moneyQuality = money.handleRemoval();
-			currentMoney += moneyQuality;
-			playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
-			return;
+		const enemyPresent = entryArray.filter((entry) => entry.type === 'enemy').length > 0;
+		if (enemyPresent) {
+			playSound(`${DATA_PATH}/sounds/converted/zap.ogg`);
+			const spriteSheet = await loadSpriteSheet(`${DATA_PATH}/images/lasers.gif`, 6, 10);
+			entryArray.push(
+				await createPlayOnce(
+					{
+						default: spriteSheet,
+					},
+					x - spriteSheet.data[0].width / 2,
+					y - spriteSheet.data[0].height / 2
+				)
+			);
 		}
 
 		// Handle clicked enemy
@@ -78,12 +79,22 @@ const init = (() => {
 		if (enemy !== -1) {
 			enemy.hp -= weaponQuality;
 			console.log(`enemy.hp: ${enemy.hp}`);
+			playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
+			return;
+		}
+
+		// Handle clicked money
+		const money = entryIntersects('money', x, y);
+		if (!enemyPresent && money !== -1) {
+			const moneyQuality = money.handleRemoval();
+			currentMoney += moneyQuality;
+			playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 			return;
 		}
 
 		// If nothing else is clicked, create food
 		const foodArray = entryArray.filter((entry) => entry.type === 'food');
-		if (foodArray.length < maxFood && enoughMoney(FOOD_COST)) {
+		if (!enemyPresent && foodArray.length < maxFood && enoughMoney(FOOD_COST)) {
 			currentMoney -= FOOD_COST;
 			entryArray.push(await createFood(x, y, foodQuality));
 			playSound(`${DATA_PATH}/sounds/DROPFOOD.ogg`);
@@ -101,7 +112,15 @@ const init = (() => {
 
 	async function addEnemy() {
 		const ENEMY_RESWPAN_TIME = 60 * 1000;
-		if (entryArray.filter((entry) => entry.type === 'enemy').length === 0) entryArray.push(await createEnemy(1, 10));
+		if (entryArray.filter((entry) => entry.type === 'enemy').length === 0) {
+			playSound(`${DATA_PATH}/sounds/AWOOGA.ogg`);
+			setTimeout(async () => {
+				entryArray.push(await createEnemy(1, 10));
+				setTimeout(() => {
+					playSound(`${DATA_PATH}/sounds/ROAR.ogg`);
+				}, 500 + Math.random() * 500);
+			}, 1000 + Math.random() * 500);
+		}
 		return setTimeout(addEnemy, ENEMY_RESWPAN_TIME);
 	}
 	let images = [];
@@ -120,35 +139,16 @@ const init = (() => {
 
 		images['buttonSprite0'] = await createStationary(
 			{
-				default: {
-					data: await loadSpriteSheet(`${DATA_PATH}/images/smallswim.gif`, 5, 10),
-					rows: 5,
-					columns: 10,
-				},
+				default: await loadSpriteSheet(`${DATA_PATH}/images/smallswim.gif`, 5, 10),
 			},
 			buttonPositions[0] - 13,
 			-15
 		);
 		images['buttonSprite1'] = await createStationary(
 			{
-				default: {
-					data: await loadSpriteSheet(`${DATA_PATH}/images/food.gif`, 5, 10),
-					rows: 5,
-					columns: 10,
-				},
+				default: await loadSpriteSheet(`${DATA_PATH}/images/food.gif`, 5, 10),
 			},
 			buttonPositions[1] + 10,
-			+10
-		);
-		images['buttonSprite2'] = await createStationary(
-			{
-				default: {
-					data: await loadSpriteSheet(`${DATA_PATH}/images/food.gif`, 5, 10),
-					rows: 5,
-					columns: 10,
-				},
-			},
-			buttonPositions[2] + 10,
 			+10
 		);
 	})();
@@ -172,14 +172,32 @@ const init = (() => {
 			};
 			context.drawImage(images['background'], 0, 0, canvas.width, canvas.height);
 			context.drawImage(images['menuBar'], 0, 0);
+
 			if (drawButton(0)) {
+				context.fillStyle = 'lime';
+				context.font = '8px serif';
+				context.fillText(`$100`, buttonPositions[0] + 22, 58);
 				//draw fish
 			}
 
 			if (drawButton(1)) {
+				context.fillStyle = 'lime';
+				context.font = '8px serif';
+				context.fillText(`$100`, buttonPositions[1] + 22, 58);
+				images['buttonSprite1'].quality = 300;
+				images['buttonSprite1'].baseFrame = (foodQuality - 1) * 10;
+				if (images['buttonSprite1'].drawCounter < images['buttonSprite1'].baseFrame)
+					images['buttonSprite1'].drawCounter = images['buttonSprite1'].baseFrame;
 				//draw food
 			}
 			if (drawButton(2)) {
+				context.fillStyle = 'lime';
+				context.font = '8px serif';
+				context.fillText(`$200`, buttonPositions[2] + 22, 58);
+
+				context.fillStyle = 'lime';
+				context.font = 'Bold 24px serif';
+				context.fillText(maxFood, buttonPositions[2] + 22, 32);
 				//draw counter
 			}
 

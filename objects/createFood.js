@@ -17,11 +17,7 @@ const createFood = async (x, y, quality = 1, width, height) => {
 	const rows = 5;
 	const columns = 10;
 	const img = {
-		default: {
-			data: await loadSpriteSheet(defaultFilename, rows, columns),
-			rows: rows,
-			columns: columns,
-		},
+		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
 	if (typeof width === 'undefined' || typeof height === 'undefined') {
 		width = img.default.data[0].width;

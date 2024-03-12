@@ -93,18 +93,28 @@ async function loadSpriteSheetByImage(image, rowCount = 1, colCount = 1) {
 	return sprites;
 }
 
-/**Loads an image and creates an array of sprites based on the specified row and column count.
- * @param {string} filename - The path or URL of the image file.
- * @param {number} rowCount - The number of rows in the sprite sheet.
- * @param {number} colCount - The number of columns in the sprite sheet.
- * @returns {Promise<HTMLCanvasElement[]>} A promise that resolves with an array of canvas elements representing the sprites.
+/**Loads a sprite sheet from the specified filename and returns an object containing the sprite sheet data.
+ * @param {string} filename - The filename of the sprite sheet.
+ * @param {number} [rowCount=1] - The number of rows in the sprite sheet.
+ * @param {number} [colCount=1] - The number of columns in the sprite sheet.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing the sprite sheet data.
  */
 async function loadSpriteSheet(filename, rowCount = 1, colCount = 1) {
 	if (typeof loadSpriteSheet.cache == 'undefined') loadSpriteSheet.cache = {};
-	if (loadSpriteSheet.cache[filename] !== undefined) return loadSpriteSheet.cache[filename];
+	if (loadSpriteSheet.cache[filename] !== undefined)
+		return {
+			data: loadSpriteSheet.cache[filename],
+			rows: rowCount,
+			columns: colCount,
+		};
 
 	const image = await applyAlphaMask(filename);
 	loadSpriteSheet.cache[filename] = await loadSpriteSheetByImage(image, rowCount, colCount);
-	return loadSpriteSheet.cache[filename];
+
+	return {
+		data: loadSpriteSheet.cache[filename],
+		rows: rowCount,
+		columns: colCount,
+	};
 }
 export { applyAlphaMask, loadImage, loadSpriteSheet, loadSpriteSheetByImage };
