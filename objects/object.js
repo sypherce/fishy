@@ -12,6 +12,8 @@ import { canvas, context } from '../core/globals.js';
  * @returns {object} - The created object.
  */
 const createObject = (type, img, x, y, width, height) => {
+	const BAR_HEIGHT = 75;
+	const FLOOR_HEIGHT = 40;
 	const ImageObject = {
 		type: type,
 		x: x,
@@ -25,13 +27,14 @@ const createObject = (type, img, x, y, width, height) => {
 		speed: 0,
 		drawCounter: 0,
 		drawDelay: 0,
+		drawDelayMax: 10,
 
 		quality: 100, //0.0-100.0 0 is bad, 100 is good
 
 		update() {
 			this.x;
 			this.y++;
-			if (this.y >= canvas.height) this.handleRemoval();
+			if (this.y >= canvas.height - FLOOR_HEIGHT) this.handleRemoval();
 		},
 
 		state() {
@@ -55,7 +58,7 @@ const createObject = (type, img, x, y, width, height) => {
 				context.drawImage(image.data[this.drawCounter], this.x, this.y, this.width, this.height);
 			}
 
-			if (this.drawDelay > 10) {
+			if (this.drawDelay > this.drawDelayMax) {
 				this.drawDelay = 0;
 				this.drawCounter++;
 				if (this.drawCounter >= this.baseFrame + image.columns) this.drawCounter = this.baseFrame;
@@ -79,7 +82,7 @@ const createObject = (type, img, x, y, width, height) => {
 			if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
 				//set a new target
 				this.targetX = Math.random() * (canvas.width - this.width);
-				this.targetY = Math.random() * (canvas.height - this.height);
+				this.targetY = Math.random() * (canvas.height - BAR_HEIGHT - this.height - FLOOR_HEIGHT) + BAR_HEIGHT;
 			}
 		},
 		moveTowardsNearestEntry(type, radius) {
