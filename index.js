@@ -77,9 +77,7 @@ const init = (() => {
 		// Handle clicked enemy
 		const enemy = entryIntersects('enemy', x, y);
 		if (enemy !== -1) {
-			enemy.hp -= weaponQuality;
-			console.log(`enemy.hp: ${enemy.hp}`);
-			playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
+			enemy.attack(weaponQuality, x, y);
 			return;
 		}
 
@@ -190,9 +188,7 @@ const init = (() => {
 				context.font = '8px serif';
 				context.fillText(`$100`, buttonPositions[1] + 22, 58);
 				images['buttonSprite1'].quality = 300;
-				images['buttonSprite1'].baseFrame = (foodQuality - 1) * 10;
-				if (images['buttonSprite1'].currentFrame < images['buttonSprite1'].baseFrame)
-					images['buttonSprite1'].currentFrame = images['buttonSprite1'].baseFrame;
+				images['buttonSprite1'].animationIndex = foodQuality - 1;
 				//draw food
 			}
 			if (drawButton(2)) {
@@ -232,7 +228,7 @@ const init = (() => {
 		(() => {
 			context.fillStyle = 'yellow';
 			context.font = '20px serif';
-			context.fillText(`$:${currentMoney}`, 550, 55);
+			context.fillText(`$${currentMoney}`, 550, 55);
 		})();
 		window.requestAnimationFrame(updateAllLoop);
 	}
