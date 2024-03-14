@@ -16,27 +16,27 @@ const createPlayOnce = async (img, x, y) => {
 	const width = img.default.data[0].width;
 	const height = img.default.data[0].height;
 	const object = createObject('playOnce', img, x, y, width, height);
-	object.drawCounter = object.image.default.columns * (object.quality / 100 - 1);
+	object.animationIndex = object.quality / 100 - 1;
 	object.state = function () {
 		const state = {
 			mirrored: this.x <= Math.round(this.targetX),
 		};
 		return state;
 	};
-	object.savedDraw = object.draw;
 	object.drawFPS = 60;
+	object.savedDraw = object.draw;
 	object.draw = function (delta) {
-		if (typeof object.lastDrawCounter == 'undefined') {
-			object.lastDrawCounter = this.drawCounter;
-		}
-		if (object.lastDrawCounter > this.drawCounter) {
+		// Initialize previousFrame on first draw
+		object.previousFrame ??= this.currentFrame;
+
+		if (object.previousFrame > this.currentFrame) {
 			this.handleRemoval();
 			return;
 		}
-		object.lastDrawCounter = this.drawCounter;
+		object.previousFrame = this.currentFrame;
 		object.savedDraw(delta);
 	};
-	object.update = function () {};
+	object.update = function (delta) {};
 	object.getImage = function () {
 		return object.image.default;
 	};

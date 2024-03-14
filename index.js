@@ -154,8 +154,10 @@ const init = (() => {
 	})();
 
 	function updateAllLoop(timestamp) {
-		if (typeof updateAllLoop.then === 'undefined') updateAllLoop.then = timestamp;
+		//initialize then timestamp
+		updateAllLoop.then ??= timestamp;
 		const delta = timestamp - updateAllLoop.then;
+
 		updateAllLoop.then = timestamp;
 		if (typeof images['background'] === 'undefined') {
 			setTimeout(updateAllLoop, 1000);
@@ -189,8 +191,8 @@ const init = (() => {
 				context.fillText(`$100`, buttonPositions[1] + 22, 58);
 				images['buttonSprite1'].quality = 300;
 				images['buttonSprite1'].baseFrame = (foodQuality - 1) * 10;
-				if (images['buttonSprite1'].drawCounter < images['buttonSprite1'].baseFrame)
-					images['buttonSprite1'].drawCounter = images['buttonSprite1'].baseFrame;
+				if (images['buttonSprite1'].currentFrame < images['buttonSprite1'].baseFrame)
+					images['buttonSprite1'].currentFrame = images['buttonSprite1'].baseFrame;
 				//draw food
 			}
 			if (drawButton(2)) {

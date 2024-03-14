@@ -4,7 +4,7 @@ import { loadSpriteSheet } from '../core/image.js';
 import { playSound } from '../core/sound.js';
 import createObject from './object.js';
 
-/**Creates a enemy object with the specified properties.
+/**Creates an enemy object with the specified properties.
  *
  * @param {number} x - The x-coordinate of the object.
  * @param {number} y - The y-coordinate of the object.
@@ -20,13 +20,12 @@ const createEnemy = async (x, y, width, height) => {
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
-	if (typeof width === 'undefined' || typeof height === 'undefined') {
-		width = img.default.data[0].width;
-		height = img.default.data[0].height;
-	}
+	// Set default width and height if not specified
+	width ??= img.default.data[0].width;
+	height ??= img.default.data[0].height;
 	const object = createObject('enemy', img, x, y, width, height);
-	object.speed = 3;
 	object.hp = 100;
+	object.speed = 3;
 	object.eat = function (quality) {
 		playSound(`${DATA_PATH}/sounds/converted/chomp${randomNumber(2)}.ogg`);
 		this.hp += quality;

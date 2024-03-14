@@ -16,14 +16,14 @@ const createStationary = async (img, x, y) => {
 	const width = img.default.data[0].width;
 	const height = img.default.data[0].height;
 	const object = createObject('stationary', img, x, y, width, height);
-	object.drawCounter = object.image.default.columns * (object.quality / 100 - 1);
+	object.animationIndex = object.quality / 100 - 1;
 	object.state = function () {
 		const state = {
 			mirrored: this.x <= Math.round(this.targetX),
 		};
 		return state;
 	};
-	object.update = function () {};
+	object.update = function (delta) {};
 	object.getImage = function () {
 		return object.image.default;
 	};

@@ -19,12 +19,11 @@ const createMoney = async (x, y, width, height) => {
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
-	if (typeof width === 'undefined' || typeof height === 'undefined') {
-		width = img.default.data[0].width;
-		height = img.default.data[0].height;
-	}
+	// Set default width and height if not specified
+	width ??= img.default.data[0].width;
+	height ??= img.default.data[0].height;
 	const object = createObject('money', img, x, y, width, height);
-	object.drawCounter = columns * (object.quality / 100 - 1);
+	object.animationIndex = object.quality / 100 - 1;
 
 	return object;
 };

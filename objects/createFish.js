@@ -24,12 +24,11 @@ const createFish = async (x, y, width, height) => {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 		hungry: await loadSpriteSheet(hungryFilename, rows, columns),
 	};
-	if (typeof width === 'undefined' || typeof height === 'undefined') {
-		width = img.default.data[0].width;
-		height = img.default.data[0].height;
-	}
+	// Set default width and height if not specified
+	width ??= img.default.data[0].width;
+	height ??= img.default.data[0].height;
 	const object = createObject('fish', img, x, y, width, height);
-	object.drawCounter = columns * (object.quality / 100 - 1);
+	object.animationIndex = object.quality / 100 - 1;
 	object.hp = 100;
 	object.moneyGenerationLevel = 0;
 	object.speed = 2;

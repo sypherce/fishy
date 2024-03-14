@@ -19,13 +19,12 @@ const createFood = async (x, y, quality = 1, width, height) => {
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
-	if (typeof width === 'undefined' || typeof height === 'undefined') {
-		width = img.default.data[0].width;
-		height = img.default.data[0].height;
-	}
+	// Set default width and height if not specified
+	width ??= img.default.data[0].width;
+	height ??= img.default.data[0].height;
 	const object = createObject('food', img, x, y, width, height);
 	object.quality = 100 * quality;
-	object.drawCounter = columns * (object.quality / 100 - 1);
+	object.animationIndex = object.quality / 100 - 1;
 
 	return object;
 };

@@ -26,8 +26,9 @@ const createObject = (type, img, x, y, width, height) => {
 		targetX: -1,
 		targetY: -1,
 		speed: 0,
-		drawCounter: 0,
+		currentFrame: 0,
 		drawFPS: 8,
+		animationIndex: 0,
 
 		quality: 100, //0.0-100.0 0 is bad, 100 is good
 		update(delta) {
@@ -49,19 +50,19 @@ const createObject = (type, img, x, y, width, height) => {
 		},
 		draw(delta) {
 			if (typeof delta === 'undefined' || isNaN(delta)) return;
-			if (typeof this.baseFrame === 'undefined') this.baseFrame = this.drawCounter;
 			const image = this.getImage();
+			const BASE_FRAME = this.animationIndex * image.columns;
 			if (this.state().mirrored) {
 				context.save();
 				context.scale(-1, 1);
-				context.drawImage(image.data[Math.floor(this.drawCounter)], -this.x - this.width, this.y, this.width, this.height);
+				context.drawImage(image.data[Math.floor(this.currentFrame)], -this.x - this.width, this.y, this.width, this.height);
 				context.restore();
 			} else {
-				context.drawImage(image.data[Math.floor(this.drawCounter)], this.x, this.y, this.width, this.height);
+				context.drawImage(image.data[Math.floor(this.currentFrame)], this.x, this.y, this.width, this.height);
 			}
 
-			this.drawCounter += (delta / 1000) * this.drawFPS;
-			if (this.drawCounter >= this.baseFrame + image.columns) this.drawCounter = this.baseFrame;
+			this.currentFrame += (delta / 1000) * this.drawFPS;
+			if (this.currentFrame >= BASE_FRAME + image.columns) this.currentFrame = BASE_FRAME;
 		},
 
 		handleRemoval() {
