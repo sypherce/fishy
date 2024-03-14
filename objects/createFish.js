@@ -47,7 +47,7 @@ const createFish = async (x, y, width, height) => {
 		};
 		return state;
 	};
-	object.update = function () {
+	object.update = function (delta) {
 		if (this.state().dead) {
 			playSound(`${DATA_PATH}/sounds/DIE.ogg`);
 			this.handleRemoval();
@@ -57,7 +57,7 @@ const createFish = async (x, y, width, height) => {
 		} else {
 			this.moveToRandomLocation();
 		}
-		this.moveTowardsTarget();
+		this.moveTowardsTarget(delta);
 		this.hp -= 0.1;
 
 		this.moneyGenerationLevel += 0.5;

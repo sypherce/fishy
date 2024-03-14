@@ -24,17 +24,17 @@ const createPlayOnce = async (img, x, y) => {
 		return state;
 	};
 	object.savedDraw = object.draw;
-	object.drawDelayMax = 1;
-	object.draw = function () {
+	object.drawFPS = 60;
+	object.draw = function (delta) {
 		if (typeof object.lastDrawCounter == 'undefined') {
 			object.lastDrawCounter = this.drawCounter;
 		}
 		if (object.lastDrawCounter > this.drawCounter) {
 			this.handleRemoval();
-		} else {
-			object.lastDrawCounter = this.drawCounter;
-			object.savedDraw();
+			return;
 		}
+		object.lastDrawCounter = this.drawCounter;
+		object.savedDraw(delta);
 	};
 	object.update = function () {};
 	object.getImage = function () {

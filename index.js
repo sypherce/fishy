@@ -154,6 +154,9 @@ const init = (() => {
 	})();
 
 	function updateAllLoop(timestamp) {
+		if (typeof updateAllLoop.then === 'undefined') updateAllLoop.then = timestamp;
+		const delta = timestamp - updateAllLoop.then;
+		updateAllLoop.then = timestamp;
 		if (typeof images['background'] === 'undefined') {
 			setTimeout(updateAllLoop, 1000);
 			return;
@@ -164,7 +167,7 @@ const init = (() => {
 			const drawButton = (i) => {
 				if (buttonEnabled[i]) {
 					context.drawImage(images['menuButton'], buttonPositions[i], 3);
-					if (images[`buttonSprite${i}`]) images[`buttonSprite${i}`].draw();
+					if (images[`buttonSprite${i}`]) images[`buttonSprite${i}`].draw(delta);
 					context.drawImage(images['menuButtonReflection'], buttonPositions[i], 3);
 				}
 
@@ -219,8 +222,8 @@ const init = (() => {
 		})();
 
 		entryArray.forEach((entry) => {
-			entry.update(timestamp);
-			entry.draw(timestamp);
+			entry.update(delta);
+			entry.draw(delta);
 		});
 
 		//draw text

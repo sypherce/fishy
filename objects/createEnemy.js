@@ -40,7 +40,7 @@ const createEnemy = async (x, y, width, height) => {
 		};
 		return state;
 	};
-	object.update = function () {
+	object.update = function (delta) {
 		if (this.state().dead) {
 			this.handleRemoval();
 		} else if (this.state().hungry) {
@@ -49,7 +49,7 @@ const createEnemy = async (x, y, width, height) => {
 		} else {
 			this.moveToRandomLocation();
 		}
-		this.moveTowardsTarget();
+		this.moveTowardsTarget(delta);
 		this.hp -= 0.01;
 	};
 

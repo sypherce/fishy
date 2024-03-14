@@ -14,6 +14,7 @@ import { canvas, context } from '../core/globals.js';
 const createObject = (type, img, x, y, width, height) => {
 	const BAR_HEIGHT = 75;
 	const FLOOR_HEIGHT = 40;
+	const fps60 = 1000.0 / 60.0;
 	const ImageObject = {
 		type: type,
 		x: x,
@@ -26,14 +27,14 @@ const createObject = (type, img, x, y, width, height) => {
 		targetY: -1,
 		speed: 0,
 		drawCounter: 0,
-		drawDelay: 0,
-		drawDelayMax: 10,
+		drawFPS: 8,
 
 		quality: 100, //0.0-100.0 0 is bad, 100 is good
+		update(delta) {
+			//move the object
+			this.y += delta / fps60;
 
-		update() {
-			this.x;
-			this.y++;
+			//remove the object if it is below the floor
 			if (this.y >= canvas.height - FLOOR_HEIGHT) this.handleRemoval();
 		},
 
@@ -46,25 +47,21 @@ const createObject = (type, img, x, y, width, height) => {
 		getImage() {
 			return this.image.default;
 		},
-		draw() {
+		draw(delta) {
+			if (typeof delta === 'undefined' || isNaN(delta)) return;
 			if (typeof this.baseFrame === 'undefined') this.baseFrame = this.drawCounter;
 			const image = this.getImage();
 			if (this.state().mirrored) {
 				context.save();
 				context.scale(-1, 1);
-				context.drawImage(image.data[this.drawCounter], -this.x - this.width, this.y, this.width, this.height);
+				context.drawImage(image.data[Math.floor(this.drawCounter)], -this.x - this.width, this.y, this.width, this.height);
 				context.restore();
 			} else {
-				context.drawImage(image.data[this.drawCounter], this.x, this.y, this.width, this.height);
+				context.drawImage(image.data[Math.floor(this.drawCounter)], this.x, this.y, this.width, this.height);
 			}
 
-			if (this.drawDelay > this.drawDelayMax) {
-				this.drawDelay = 0;
-				this.drawCounter++;
-				if (this.drawCounter >= this.baseFrame + image.columns) this.drawCounter = this.baseFrame;
-			} else {
-				this.drawDelay++;
-			}
+			this.drawCounter += (delta / 1000) * this.drawFPS;
+			if (this.drawCounter >= this.baseFrame + image.columns) this.drawCounter = this.baseFrame;
 		},
 
 		handleRemoval() {
@@ -72,9 +69,11 @@ const createObject = (type, img, x, y, width, height) => {
 			return this.quality;
 		},
 		//move the object towards the target
-		moveTowardsTarget() {
-			this.x = Math.abs(this.targetX - this.x) <= this.speed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * this.speed;
-			this.y = Math.abs(this.targetY - this.y) <= this.speed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * this.speed;
+		moveTowardsTarget(delta) {
+			if (typeof delta === 'undefined' || isNaN(delta)) return;
+			const deltaSpeed = (delta / fps60) * this.speed;
+			this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
+			this.y = Math.abs(this.targetY - this.y) <= deltaSpeed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * deltaSpeed;
 		},
 		moveToRandomLocation() {
 			const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= this.speed && Math.abs(this.y - this.targetY) <= this.speed;
