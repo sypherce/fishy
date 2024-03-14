@@ -52,6 +52,11 @@ const createObject = (type, img, x, y, width, height) => {
 			if (typeof delta === 'undefined' || isNaN(delta)) return;
 			const image = this.getImage();
 			const BASE_FRAME = this.animationIndex * image.columns;
+
+			//fix current frame if animationIndex was changed
+			if (this.currentFrame < BASE_FRAME) this.currentFrame = BASE_FRAME;
+			if (this.currentFrame >= BASE_FRAME + image.columns) this.currentFrame = BASE_FRAME;
+
 			if (this.state().mirrored) {
 				context.save();
 				context.scale(-1, 1);
