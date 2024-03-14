@@ -1,6 +1,4 @@
 'use strict';
-import { DATA_PATH } from '../core/globals.js';
-import { loadSpriteSheet } from '../core/image.js';
 import createObject from './object.js';
 
 /**Creates a playOnce object with the specified properties.

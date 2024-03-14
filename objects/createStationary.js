@@ -1,6 +1,4 @@
 'use strict';
-import { DATA_PATH } from '../core/globals.js';
-import { loadSpriteSheet } from '../core/image.js';
 import createObject from './object.js';
 
 /**Creates a stationary object with the specified properties.
@@ -23,7 +21,7 @@ const createStationary = async (img, x, y) => {
 		};
 		return state;
 	};
-	object.update = function (delta) {};
+	object.update = function () {};
 	object.getImage = function () {
 		return object.image.default;
 	};
