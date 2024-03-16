@@ -2,7 +2,7 @@
 import { entryArray, entryIntersects } from './core/entry.js';
 import { DATA_PATH, canvas, context, randomNumber } from './core/globals.js';
 import { applyAlphaMask, loadImage, loadSpriteSheet } from './core/image.js';
-import { playMusic, playSound } from './core/sound.js';
+import { playMusic, playSound, setMusicVolume, setSoundVolume } from './core/sound.js';
 import createEnemy from './objects/createEnemy.js';
 import createFish from './objects/createFish.js';
 import createFood from './objects/createFood.js';
@@ -56,6 +56,10 @@ const init = (() => {
 				console.log('5 clicked');
 			} else if (buttonClicked(6)) {
 				console.log('6 clicked');
+			}
+			//menu button position
+			else if (x >= 526 && x <= 622 && y <= 30) {
+				setMusicVolume(0.0);
 			}
 			return;
 		}
