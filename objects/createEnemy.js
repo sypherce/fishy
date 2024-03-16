@@ -23,6 +23,7 @@ const createEnemy = async (x, y, width, height) => {
 	// Set default width and height if not specified
 	width ??= img.default.data[0].width;
 	height ??= img.default.data[0].height;
+
 	const object = createObject('enemy', img, x, y, width, height);
 	object.hp = 100;
 	object.speed = 3;

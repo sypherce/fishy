@@ -13,6 +13,7 @@ import createObject from './object.js';
 const createStationary = async (img, x, y) => {
 	const width = img.default.data[0].width;
 	const height = img.default.data[0].height;
+
 	const object = createObject('stationary', img, x, y, width, height);
 	object.animationIndex = object.quality / 100 - 1;
 	object.state = function () {
