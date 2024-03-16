@@ -6,6 +6,7 @@ import { playMusic, playSound, setMusicVolume, setSoundVolume } from './core/sou
 import createEnemy from './objects/createEnemy.js';
 import createFish from './objects/createFish.js';
 import createFood from './objects/createFood.js';
+import createFriend from './objects/createFriend.js';
 import createPlayOnce from './objects/createPlayOnce.js';
 import createStationary from './objects/createStationary.js';
 
@@ -130,6 +131,15 @@ const init = (() => {
 		playMusic(`${DATA_PATH}/music/converted/Insaniq2.mp3`);
 
 		await addEnemy();
+
+		async function addFriend() {
+			const stinky = await createFriend(1, 400);
+			stinky.addMoney = function (amount) {
+				currentMoney += amount;
+			};
+			entryArray.push(stinky);
+		}
+		await addFriend();
 
 		for (let i = 0; i < 10; i++) {
 			entryArray.push(await createFish(Math.random() * canvas.width, Math.random() * canvas.height));

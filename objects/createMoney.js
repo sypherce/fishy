@@ -22,6 +22,7 @@ const createMoney = async (x, y, width, height) => {
 	// Set default width and height if not specified
 	width ??= img.default.data[0].width;
 	height ??= img.default.data[0].height;
+
 	const object = createObject('money', img, x, y, width, height);
 	object.animationIndex = object.quality / 100 - 1;
 

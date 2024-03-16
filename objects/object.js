@@ -79,22 +79,22 @@ const createObject = (type, img, x, y, width, height) => {
 			this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
 			this.y = Math.abs(this.targetY - this.y) <= deltaSpeed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * deltaSpeed;
 		},
-		moveToRandomLocation() {
+		moveToRandomLocation(horizontalOnly) {
 			const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= this.speed && Math.abs(this.y - this.targetY) <= this.speed;
 			const isTargetSetToNegativeOne = this.targetX === -1 && this.targetY === -1;
 			if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
 				//set a new target
 				this.targetX = Math.random() * (canvas.width - this.width);
-				this.targetY = Math.random() * (canvas.height - BAR_HEIGHT - this.height - FLOOR_HEIGHT) + BAR_HEIGHT;
+				this.targetY = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.height - FLOOR_HEIGHT) + BAR_HEIGHT;
 			}
 		},
-		moveTowardsNearestEntry(type, radius) {
+		moveTowardsNearestEntry(type, radius, horizontalOnly = false) {
 			const nearest = findNearestEntry(type, this.x, this.y);
 
 			//if there is a Nearest entry; move towards it
 			if (nearest.entry) {
 				this.targetX = nearest.entry.x;
-				this.targetY = nearest.entry.y;
+				this.targetY = horizontalOnly ? this.y : nearest.entry.y;
 				//move towards the entry
 				//this.moveTowardsTarget();
 
