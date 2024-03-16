@@ -99,13 +99,14 @@ async function loadSpriteSheetByImage(image, rowCount = 1, colCount = 1) {
  * @param {number} [colCount=1] - The number of columns in the sprite sheet.
  * @returns {Promise<Object>} - A promise that resolves to an object containing the sprite sheet data.
  */
-async function loadSpriteSheet(filename, rowCount = 1, colCount = 1) {
+async function loadSpriteSheet(filename, rowCount = 1, colCount = 1, type = 'default') {
 	if (typeof loadSpriteSheet.cache == 'undefined') loadSpriteSheet.cache = {};
 	if (loadSpriteSheet.cache[filename] !== undefined)
 		return {
 			data: loadSpriteSheet.cache[filename],
 			rows: rowCount,
 			columns: colCount,
+			type: type,
 		};
 
 	const image = await applyAlphaMask(filename);
@@ -115,6 +116,7 @@ async function loadSpriteSheet(filename, rowCount = 1, colCount = 1) {
 		data: loadSpriteSheet.cache[filename],
 		rows: rowCount,
 		columns: colCount,
+		type: type,
 	};
 }
 export { applyAlphaMask, loadImage, loadSpriteSheet, loadSpriteSheetByImage };

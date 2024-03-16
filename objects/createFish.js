@@ -13,16 +13,18 @@ import createObject from './object.js';
  * @param {number} width - The width of the object.
  * @param {number} height - The height of the object.
  * @param {string} src - The source URL of the image for the object.
- * @returns {Promise<Object>} - The created object.
+ * @returns {Promise<ImageObject>} - The created object.
  */
 const createFish = async (x, y, width, height) => {
 	const defaultFilename = `${DATA_PATH}/images/smallswim.gif`;
 	const hungryFilename = `${DATA_PATH}/images/hungryswim.gif`;
+	const deadFilename = `${DATA_PATH}/images/smalldie.gif`;
 	const rows = 5;
 	const columns = 10;
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 		hungry: await loadSpriteSheet(hungryFilename, rows, columns),
+		dead: await loadSpriteSheet(deadFilename, rows, columns, 'once'),
 	};
 	// Set default width and height if not specified
 	width ??= img.default.data[0].width;
@@ -40,18 +42,26 @@ const createFish = async (x, y, width, height) => {
 	};
 	object.state = function () {
 		const state = {
-			hungry: this.hp <= 75,
-			starving: this.hp <= 50,
+			hungry: this.hp <= 75 && this.hp > 50,
+			starving: this.hp <= 50 && this.hp > 0,
 			dead: this.hp <= 0,
 			mirrored: this.x <= Math.round(this.targetX),
 		};
 		return state;
 	};
 	object.update = function (delta) {
+		const fps60 = 1000.0 / 60.0;
 		if (this.state().dead) {
-			playSound(`${DATA_PATH}/sounds/DIE.ogg`);
-			this.handleRemoval();
-		} else if (this.state().hungry) {
+			if (typeof this.alreadyDead === 'undefined') {
+				playSound(`${DATA_PATH}/sounds/DIE.ogg`);
+				this.alreadyDead = true;
+			}
+			if (this.y > 400) {
+				this.handleRemoval();
+			}
+			this.y += delta / fps60;
+			return;
+		} else if (this.state().hungry || this.state().starving) {
 			const entryFound = this.moveTowardsNearestEntry('food', 50);
 			if (!entryFound) this.moveToRandomLocation();
 		} else {
@@ -70,6 +80,7 @@ const createFish = async (x, y, width, height) => {
 		})();
 	};
 	object.getImage = function () {
+		if (object.state().dead) return object.image.dead;
 		if (object.state().starving) return object.image.hungry;
 
 		return object.image.default;

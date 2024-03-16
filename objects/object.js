@@ -9,12 +9,13 @@ import { canvas, context } from '../core/globals.js';
  * @param {number} width - The width of the object.
  * @param {number} height - The height of the object.
  * @param {object} img - The image object associated with the object.
- * @returns {object} - The created object.
+ * @returns {ImageObject} - The created object.
  */
 const createObject = (type, img, x, y, width, height) => {
 	const BAR_HEIGHT = 75;
 	const FLOOR_HEIGHT = 40;
 	const fps60 = 1000.0 / 60.0;
+
 	const ImageObject = {
 		type: type,
 		x: x,
@@ -54,7 +55,15 @@ const createObject = (type, img, x, y, width, height) => {
 
 			//fix current frame if animationIndex was changed
 			if (this.currentFrame < BASE_FRAME) this.currentFrame = BASE_FRAME;
-			if (this.currentFrame >= BASE_FRAME + image.columns) this.currentFrame = BASE_FRAME;
+			//#region handle animation type
+			if (this.currentFrame >= BASE_FRAME + image.columns) {
+				if (image.type == 'once') {
+					this.currentFrame = BASE_FRAME + image.columns - 1;
+				} else {
+					this.currentFrame = BASE_FRAME;
+				}
+			}
+			//#endregion
 
 			if (this.state().mirrored) {
 				context.save();
@@ -66,7 +75,15 @@ const createObject = (type, img, x, y, width, height) => {
 			}
 
 			this.currentFrame += (delta / 1000) * this.drawFPS;
-			if (this.currentFrame >= BASE_FRAME + image.columns) this.currentFrame = BASE_FRAME;
+			//#region handle animation type
+			if (this.currentFrame >= BASE_FRAME + image.columns) {
+				if (image.type == 'once') {
+					this.currentFrame = BASE_FRAME + image.columns - 1;
+				} else {
+					this.currentFrame = BASE_FRAME;
+				}
+			}
+			//#endregion
 		},
 
 		handleRemoval() {

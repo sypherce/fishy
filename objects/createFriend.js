@@ -35,19 +35,14 @@ const createFriend = async (x, y, width, height) => {
 	};
 	object.state = function () {
 		const state = {
-			hungry: true,
 			mirrored: this.x <= Math.round(this.targetX),
 		};
 		return state;
 	};
 	object.update = function (delta) {
 		const state = this.state();
-		if (state.hungry) {
-			const entryFound = this.moveTowardsNearestEntry('money', 50, true);
-			if (!entryFound) this.moveToRandomLocation(true);
-		} else {
-			this.moveToRandomLocation(true);
-		}
+		const entryFound = this.moveTowardsNearestEntry('money', 50, true);
+		if (!entryFound) this.moveToRandomLocation(true);
 		this.moveTowardsTarget(delta);
 	};
 	object.getImage = function () {
