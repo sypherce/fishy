@@ -152,6 +152,13 @@ const init = (() => {
 	})();
 
 	function updateAllLoop(timestamp) {
+		//first run timestamp is NaN
+		if (isNaN(timestamp)) {
+			console.log(timestamp);
+			window.requestAnimationFrame(updateAllLoop);
+			return;
+		}
+
 		//initialize then timestamp
 		updateAllLoop.then ??= timestamp;
 		const delta = timestamp - updateAllLoop.then;

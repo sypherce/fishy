@@ -49,7 +49,6 @@ const createObject = (type, img, x, y, width, height) => {
 			return this.image.default;
 		},
 		draw(delta) {
-			if (typeof delta === 'undefined' || isNaN(delta)) return;
 			const image = this.getImage();
 			const BASE_FRAME = this.animationIndex * image.columns;
 
@@ -76,7 +75,6 @@ const createObject = (type, img, x, y, width, height) => {
 		},
 		//move the object towards the target
 		moveTowardsTarget(delta) {
-			if (typeof delta === 'undefined' || isNaN(delta)) return;
 			const deltaSpeed = (delta / fps60) * this.speed;
 			this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
 			this.y = Math.abs(this.targetY - this.y) <= deltaSpeed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * deltaSpeed;
