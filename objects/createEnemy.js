@@ -5,13 +5,9 @@ import { playSound } from '../core/sound.js';
 import createObject from './object.js';
 
 /**Creates an enemy object with the specified properties.
- *
  * @param {number} x - The x-coordinate of the object.
  * @param {number} y - The y-coordinate of the object.
- * @param {number} width - The width of the object.
- * @param {number} height - The height of the object.
- * @param {string} src - The source URL of the image for the object.
- * @returns {Promise<Object>} - The created object.
+ * @returns {Promise<ImageObject>} - The created object.
  */
 const createEnemy = async (x, y) => {
 	const defaultFilename = `${DATA_PATH}/images/balrog.gif`;
@@ -51,7 +47,7 @@ const createEnemy = async (x, y) => {
 	object.state = function () {
 		const state = {
 			attacked: this.attacked,
-			hungry: this.hp <= 75,
+			hungry: this.hp <= 75 && this.hp > 0,
 			dead: this.hp <= 0,
 			mirrored: this.x <= Math.round(this.targetX),
 		};

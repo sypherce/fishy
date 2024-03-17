@@ -7,12 +7,8 @@ import createMoney from './createMoney.js';
 import createObject from './object.js';
 
 /**Creates a fish object with the specified properties.
- *
  * @param {number} x - The x-coordinate of the object.
  * @param {number} y - The y-coordinate of the object.
- * @param {number} width - The width of the object.
- * @param {number} height - The height of the object.
- * @param {string} src - The source URL of the image for the object.
  * @returns {Promise<ImageObject>} - The created object.
  */
 const createFish = async (x, y) => {
@@ -48,7 +44,8 @@ const createFish = async (x, y) => {
 	};
 	object.update = function (delta) {
 		const fps60 = 1000.0 / 60.0;
-		if (this.state().dead) {
+		const state = this.state();
+		if (state.dead) {
 			if (typeof this.alreadyDead === 'undefined') {
 				playSound(`${DATA_PATH}/sounds/DIE.ogg`);
 				this.alreadyDead = true;
@@ -58,7 +55,7 @@ const createFish = async (x, y) => {
 			}
 			this.y += delta / fps60;
 			return;
-		} else if (this.state().hungry || this.state().starving) {
+		} else if (state.hungry || state.starving) {
 			const entryFound = this.moveTowardsNearestEntry('food', 50);
 			if (!entryFound) this.moveToRandomLocation();
 		} else {
@@ -77,8 +74,9 @@ const createFish = async (x, y) => {
 		})();
 	};
 	object.getImage = function () {
-		if (object.state().dead) return object.image.dead;
-		if (object.state().starving) return object.image.hungry;
+		const state = this.state();
+		if (state.dead) return object.image.dead;
+		if (state.starving) return object.image.hungry;
 
 		return object.image.default;
 	};

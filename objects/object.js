@@ -4,14 +4,11 @@ import { canvas, context } from '../core/globals.js';
 
 /** Creates an object with specified properties.
  * @param {string} type - The type of the object.
- * @param {number} x - The x-coordinate of the object.
- * @param {number} y - The y-coordinate of the object.
- * @param {number} width - The width of the object.
- * @param {number} height - The height of the object.
  * @param {object} img - The image object associated with the object.
+ * @param {number} x - The x-coordinate of the object.
  * @returns {ImageObject} - The created object.
  */
-const createObject = (type, img, x, y, width, height) => {
+const createObject = (type, img, x, y) => {
 	const BAR_HEIGHT = 75;
 	const FLOOR_HEIGHT = 40;
 	const fps60 = 1000.0 / 60.0;
