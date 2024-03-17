@@ -20,8 +20,6 @@ const createObject = (type, img, x, y, width, height) => {
 		type: type,
 		x: x,
 		y: y,
-		width: width,
-		height: height,
 		image: img,
 		context: context,
 		targetX: -1,
@@ -32,6 +30,12 @@ const createObject = (type, img, x, y, width, height) => {
 		animationIndex: 0,
 
 		quality: 100, //0.0-100.0 0 is bad, 100 is good
+		getWidth() {
+			return this.getImage().data[0].width;
+		},
+		getHeight() {
+			return this.getImage().data[0].height;
+		},
 		update(delta) {
 			//move the object
 			this.y += delta / fps60;
@@ -46,44 +50,43 @@ const createObject = (type, img, x, y, width, height) => {
 			};
 			return state;
 		},
+		setAnimationIndex(value) {
+			if (this.animationIndex !== value) {
+				this.animationIndex = value;
+				this.currentFrame = value * this.image.default.columns;
+			}
+		},
 		getImage() {
 			return this.image.default;
 		},
 		draw(delta) {
 			const image = this.getImage();
-			const BASE_FRAME = this.animationIndex * image.columns;
-
-			//fix current frame if animationIndex was changed
-			if (this.currentFrame < BASE_FRAME) this.currentFrame = BASE_FRAME;
-			//#region handle animation type
-			if (this.currentFrame >= BASE_FRAME + image.columns) {
-				if (image.type == 'once') {
-					this.currentFrame = BASE_FRAME + image.columns - 1;
-				} else {
-					this.currentFrame = BASE_FRAME;
-				}
-			}
-			//#endregion
 
 			if (this.state().mirrored) {
 				context.save();
 				context.scale(-1, 1);
-				context.drawImage(image.data[Math.floor(this.currentFrame)], -this.x - this.width, this.y, this.width, this.height);
+				context.drawImage(image.data[Math.floor(this.currentFrame)], -this.x - this.getWidth(), this.y, this.getWidth(), this.getHeight());
 				context.restore();
 			} else {
-				context.drawImage(image.data[Math.floor(this.currentFrame)], this.x, this.y, this.width, this.height);
+				context.drawImage(image.data[Math.floor(this.currentFrame)], this.x, this.y, this.getWidth(), this.getHeight());
 			}
 
-			this.currentFrame += (delta / 1000) * this.drawFPS;
-			//#region handle animation type
-			if (this.currentFrame >= BASE_FRAME + image.columns) {
-				if (image.type == 'once') {
-					this.currentFrame = BASE_FRAME + image.columns - 1;
-				} else {
-					this.currentFrame = BASE_FRAME;
+			//update the current frame
+			this.currentFrame = (() => {
+				const BASE_FRAME = this.animationIndex * image.columns;
+				const LAST_FRAME = BASE_FRAME + image.columns - 1;
+
+				this.currentFrame += (delta / 1000) * this.drawFPS;
+
+				if (this.currentFrame >= LAST_FRAME) {
+					if (image.type == 'once') {
+						return LAST_FRAME;
+					}
+
+					return BASE_FRAME;
 				}
-			}
-			//#endregion
+				return this.currentFrame;
+			})();
 		},
 
 		handleRemoval() {
@@ -101,8 +104,8 @@ const createObject = (type, img, x, y, width, height) => {
 			const isTargetSetToNegativeOne = this.targetX === -1 && this.targetY === -1;
 			if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
 				//set a new target
-				this.targetX = Math.random() * (canvas.width - this.width);
-				this.targetY = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.height - FLOOR_HEIGHT) + BAR_HEIGHT;
+				this.targetX = Math.random() * (canvas.width - this.getWidth());
+				this.targetY = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT;
 			}
 		},
 		moveTowardsNearestEntry(type, radius, horizontalOnly = false) {

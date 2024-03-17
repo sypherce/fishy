@@ -11,11 +11,8 @@ import createObject from './object.js';
  * @returns {Promise<Object>} - The created object.
  */
 const createStationary = async (img, x, y) => {
-	const width = img.default.data[0].width;
-	const height = img.default.data[0].height;
-
-	const object = createObject('stationary', img, x, y, width, height);
-	object.animationIndex = object.quality / 100 - 1;
+	const object = createObject('stationary', img, x, y);
+	object.setAnimationIndex(object.quality / 100 - 1);
 	object.state = function () {
 		const state = {
 			mirrored: this.x <= Math.round(this.targetX),

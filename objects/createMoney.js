@@ -12,19 +12,16 @@ import createObject from './object.js';
  * @param {string} src - The source URL of the image for the object.
  * @returns {Promise<Object>} - The created object.
  */
-const createMoney = async (x, y, width, height) => {
+const createMoney = async (x, y) => {
 	const defaultFilename = `${DATA_PATH}/images/money.gif`;
 	const rows = 5;
 	const columns = 10;
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
-	// Set default width and height if not specified
-	width ??= img.default.data[0].width;
-	height ??= img.default.data[0].height;
 
-	const object = createObject('money', img, x, y, width, height);
-	object.animationIndex = object.quality / 100 - 1;
+	const object = createObject('money', img, x, y);
+	object.setAnimationIndex(object.quality / 100 - 1);
 
 	return object;
 };

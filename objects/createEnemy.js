@@ -13,18 +13,15 @@ import createObject from './object.js';
  * @param {string} src - The source URL of the image for the object.
  * @returns {Promise<Object>} - The created object.
  */
-const createEnemy = async (x, y, width, height) => {
+const createEnemy = async (x, y) => {
 	const defaultFilename = `${DATA_PATH}/images/balrog.gif`;
 	const rows = 2;
 	const columns = 10;
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
-	// Set default width and height if not specified
-	width ??= img.default.data[0].width;
-	height ??= img.default.data[0].height;
 
-	const object = createObject('enemy', img, x, y, width, height);
+	const object = createObject('enemy', img, x, y);
 	object.hp = 100;
 	object.speed = 3;
 	object.attacked = false; //flag for attacked enemy knockback
@@ -38,12 +35,12 @@ const createEnemy = async (x, y, width, height) => {
 		this.hp -= weaponQuality;
 		this.attacked = true;
 		//move the enemy away from the attack point
-		if (Math.abs(x - this.x) < Math.abs(this.x + this.width - x)) {
+		if (Math.abs(x - this.x) < Math.abs(this.x + this.getWidth() - x)) {
 			this.targetX = this.x + SPEED;
 		} else {
 			this.targetX = this.x - SPEED;
 		}
-		if (Math.abs(y - this.y) < Math.abs(this.y + this.height - y)) {
+		if (Math.abs(y - this.y) < Math.abs(this.y + this.getHeight() - y)) {
 			this.targetY = this.y + SPEED;
 		} else {
 			this.targetY = this.y - SPEED;

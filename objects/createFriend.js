@@ -15,19 +15,16 @@ import createObject from './object.js';
  * @param {string} src - The source URL of the image for the object.
  * @returns {Promise<Object>} - The created object.
  */
-const createFriend = async (x, y, width, height) => {
+const createFriend = async (x, y) => {
 	const defaultFilename = `${DATA_PATH}/images/stinky.gif`;
 	const rows = 3;
 	const columns = 10;
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 	};
-	// Set default width and height if not specified
-	width ??= img.default.data[0].width;
-	height ??= img.default.data[0].height;
 
-	const object = createObject('friend', img, x, y, width, height);
-	object.animationIndex = 0;
+	const object = createObject('friend', img, x, y);
+	object.setAnimationIndex(0);
 	object.speed = 2;
 	object.eat = function (quality) {
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);

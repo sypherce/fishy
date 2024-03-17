@@ -209,7 +209,7 @@ const init = (() => {
 				context.font = '8px serif';
 				context.fillText(`$100`, buttonPositions[1] + 22, 58);
 				images['buttonSprite1'].quality = 300;
-				images['buttonSprite1'].animationIndex = foodQuality - 1;
+				images['buttonSprite1'].setAnimationIndex(foodQuality - 1);
 				//draw food
 			}
 			if (drawButton(2)) {

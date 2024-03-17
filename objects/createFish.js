@@ -15,7 +15,7 @@ import createObject from './object.js';
  * @param {string} src - The source URL of the image for the object.
  * @returns {Promise<ImageObject>} - The created object.
  */
-const createFish = async (x, y, width, height) => {
+const createFish = async (x, y) => {
 	const defaultFilename = `${DATA_PATH}/images/smallswim.gif`;
 	const hungryFilename = `${DATA_PATH}/images/hungryswim.gif`;
 	const deadFilename = `${DATA_PATH}/images/smalldie.gif`;
@@ -26,12 +26,9 @@ const createFish = async (x, y, width, height) => {
 		hungry: await loadSpriteSheet(hungryFilename, rows, columns),
 		dead: await loadSpriteSheet(deadFilename, rows, columns, 'once'),
 	};
-	// Set default width and height if not specified
-	width ??= img.default.data[0].width;
-	height ??= img.default.data[0].height;
 
-	const object = createObject('fish', img, x, y, width, height);
-	object.animationIndex = object.quality / 100 - 1;
+	const object = createObject('fish', img, x, y);
+	object.setAnimationIndex(object.quality / 100 - 1);
 	object.hp = 100;
 	object.moneyGenerationLevel = 0;
 	object.speed = 2;
