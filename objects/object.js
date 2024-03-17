@@ -11,7 +11,7 @@ import { canvas, context } from '../core/globals.js';
 const createObject = (type, img, x, y) => {
 	const BAR_HEIGHT = 75;
 	const FLOOR_HEIGHT = 40;
-	const fps60 = 1000.0 / 60.0;
+	const FPS_60 = 1000.0 / 60.0;
 
 	const ImageObject = {
 		type: type,
@@ -35,7 +35,7 @@ const createObject = (type, img, x, y) => {
 		},
 		update(delta) {
 			//move the object
-			this.y += delta / fps60;
+			this.y += delta / FPS_60;
 
 			//remove the object if it is below the floor
 			if (this.y >= canvas.height - FLOOR_HEIGHT) this.handleRemoval();
@@ -92,11 +92,11 @@ const createObject = (type, img, x, y) => {
 		},
 		//move the object towards the target
 		moveTowardsTarget(delta) {
-			const deltaSpeed = (delta / fps60) * this.speed;
+			const deltaSpeed = (delta / FPS_60) * this.speed;
 			this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
 			this.y = Math.abs(this.targetY - this.y) <= deltaSpeed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * deltaSpeed;
 		},
-		moveToRandomLocation(horizontalOnly) {
+		targetRandomLocation(horizontalOnly) {
 			const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= this.speed && Math.abs(this.y - this.targetY) <= this.speed;
 			const isTargetSetToNegativeOne = this.targetX === -1 && this.targetY === -1;
 			if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
@@ -105,15 +105,13 @@ const createObject = (type, img, x, y) => {
 				this.targetY = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT;
 			}
 		},
-		moveTowardsNearestEntry(type, radius, horizontalOnly = false) {
+		targetNearestEntry(type, radius, horizontalOnly = false) {
 			const nearest = findNearestEntry(type, this.x, this.y);
 
 			//if there is a Nearest entry; move towards it
 			if (nearest.entry) {
 				this.targetX = nearest.entry.x;
 				this.targetY = horizontalOnly ? this.y : nearest.entry.y;
-				//move towards the entry
-				//this.moveTowardsTarget();
 
 				//if close enough to the entry
 				if (nearest.distance < radius) {

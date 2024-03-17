@@ -34,8 +34,8 @@ const createFriend = async (x, y) => {
 	};
 	object.update = function (delta) {
 		const state = this.state();
-		const entryFound = this.moveTowardsNearestEntry('money', 50, true);
-		if (!entryFound) this.moveToRandomLocation(true);
+		const entryFound = this.targetNearestEntry('money', 50, true);
+		if (!entryFound) this.targetRandomLocation(true);
 		this.moveTowardsTarget(delta);
 	};
 	object.getImage = function () {

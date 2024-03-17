@@ -41,7 +41,6 @@ const createEnemy = async (x, y) => {
 		} else {
 			this.targetY = this.y - SPEED;
 		}
-		console.log(`enemy.hp: ${this.hp}`);
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 	};
 	object.state = function () {
@@ -62,10 +61,10 @@ const createEnemy = async (x, y) => {
 				this.attacked = false;
 			}
 		} else if (state.hungry) {
-			const entryFound = this.moveTowardsNearestEntry('fish', 50);
-			if (!entryFound) this.moveToRandomLocation();
+			const entryFound = this.targetNearestEntry('fish', 50);
+			if (!entryFound) this.targetRandomLocation();
 		} else {
-			this.moveToRandomLocation();
+			this.targetRandomLocation();
 		}
 		this.moveTowardsTarget(delta);
 		this.hp -= 0.01;

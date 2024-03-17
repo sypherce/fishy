@@ -43,7 +43,7 @@ const createFish = async (x, y) => {
 		return state;
 	};
 	object.update = function (delta) {
-		const fps60 = 1000.0 / 60.0;
+		const FPS_60 = 1000.0 / 60.0;
 		const state = this.state();
 		if (state.dead) {
 			if (typeof this.alreadyDead === 'undefined') {
@@ -53,13 +53,13 @@ const createFish = async (x, y) => {
 			if (this.y > 400) {
 				this.handleRemoval();
 			}
-			this.y += delta / fps60;
+			this.y += delta / FPS_60;
 			return;
 		} else if (state.hungry || state.starving) {
-			const entryFound = this.moveTowardsNearestEntry('food', 50);
-			if (!entryFound) this.moveToRandomLocation();
+			const entryFound = this.targetNearestEntry('food', 50);
+			if (!entryFound) this.targetRandomLocation();
 		} else {
-			this.moveToRandomLocation();
+			this.targetRandomLocation();
 		}
 		this.moveTowardsTarget(delta);
 		this.hp -= 0.1;
