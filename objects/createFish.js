@@ -15,12 +15,14 @@ const createFish = async (x, y) => {
 	const defaultFilename = `${DATA_PATH}/images/smallswim.gif`;
 	const hungryFilename = `${DATA_PATH}/images/hungryswim.gif`;
 	const deadFilename = `${DATA_PATH}/images/smalldie.gif`;
+	const turningFilename = `${DATA_PATH}/images/smallturn.gif`;
 	const rows = 5;
 	const columns = 10;
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
 		hungry: await loadSpriteSheet(hungryFilename, rows, columns),
 		dead: await loadSpriteSheet(deadFilename, rows, columns, 'once'),
+		turning: await loadSpriteSheet(turningFilename, rows, columns, 'once'),
 	};
 
 	const object = createObject('fish', img, x, y);
@@ -33,18 +35,19 @@ const createFish = async (x, y) => {
 		this.hp += quality;
 		if (this.hp > 100) this.hp = 100;
 	};
-	object.state = function () {
+	object.getState = function () {
 		const state = {
 			hungry: this.hp <= 75 && this.hp > 50,
 			starving: this.hp <= 50 && this.hp > 0,
 			dead: this.hp <= 0,
 			mirrored: this.x <= Math.round(this.targetX),
+			turning: this.isTurning,
 		};
 		return state;
 	};
 	object.update = function (delta) {
 		const FPS_60 = 1000.0 / 60.0;
-		const state = this.state();
+		const state = this.getState();
 		if (state.dead) {
 			if (typeof this.alreadyDead === 'undefined') {
 				playSound(`${DATA_PATH}/sounds/DIE.ogg`);
@@ -74,8 +77,9 @@ const createFish = async (x, y) => {
 		})();
 	};
 	object.getImage = function () {
-		const state = this.state();
+		const state = this.getState();
 		if (state.dead) return object.image.dead;
+		if (state.turning) return object.image.turning;
 		if (state.starving) return object.image.hungry;
 
 		return object.image.default;

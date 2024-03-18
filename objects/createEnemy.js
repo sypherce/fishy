@@ -15,6 +15,7 @@ const createEnemy = async (x, y) => {
 	const columns = 10;
 	const img = {
 		default: await loadSpriteSheet(defaultFilename, rows, columns),
+		turning: await loadSpriteSheet(defaultFilename, rows, columns, 'once'),
 	};
 
 	const object = createObject('enemy', img, x, y);
@@ -43,17 +44,18 @@ const createEnemy = async (x, y) => {
 		}
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 	};
-	object.state = function () {
+	object.getState = function () {
 		const state = {
 			attacked: this.attacked,
 			hungry: this.hp <= 75 && this.hp > 0,
 			dead: this.hp <= 0,
 			mirrored: this.x <= Math.round(this.targetX),
+			turning: this.isTurning,
 		};
 		return state;
 	};
 	object.update = function (delta) {
-		const state = this.state();
+		const state = this.getState();
 		if (state.dead) {
 			this.handleRemoval();
 		} else if (state.attacked) {
@@ -68,6 +70,16 @@ const createEnemy = async (x, y) => {
 		}
 		this.moveTowardsTarget(delta);
 		this.hp -= 0.01;
+	};
+	object.getImage = function () {
+		const state = this.getState();
+		if (state.turning) {
+			if (this.animationIndex != 1) this.setAnimationIndex(1);
+			return object.image.turning;
+		}
+		if (this.animationIndex != 0) this.setAnimationIndex(0);
+
+		return object.image.default;
 	};
 
 	return object;

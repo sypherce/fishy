@@ -9,7 +9,7 @@ import createObject from './object.js';
 const createPlayOnce = (img, x, y) => {
 	const object = createObject('playOnce', img, x, y);
 	object.setAnimationIndex(object.quality / 100 - 1);
-	object.state = function () {
+	object.getState = function () {
 		const state = {
 			mirrored: this.x <= Math.round(this.targetX),
 		};

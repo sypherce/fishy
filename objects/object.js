@@ -13,6 +13,12 @@ const createObject = (type, img, x, y) => {
 	const FLOOR_HEIGHT = 40;
 	const FPS_60 = 1000.0 / 60.0;
 
+	function setTargetAndHandleTurningState(object, x, y) {
+		const savedState = object.getState();
+		object.targetX = x;
+		object.targetY = y;
+		if (savedState.mirrored != object.getState().mirrored) object.isTurning = true;
+	}
 	const ImageObject = {
 		type: type,
 		x: x,
@@ -25,6 +31,7 @@ const createObject = (type, img, x, y) => {
 		currentFrame: 0,
 		drawFPS: 8,
 		animationIndex: 0,
+		isTurning: false,
 
 		quality: 100, //0.0-100.0 0 is bad, 100 is good
 		getWidth() {
@@ -41,9 +48,10 @@ const createObject = (type, img, x, y) => {
 			if (this.y >= canvas.height - FLOOR_HEIGHT) this.handleRemoval();
 		},
 
-		state() {
+		getState() {
 			const state = {
 				mirrored: this.x <= Math.round(this.targetX),
+				turning: this.isTurning,
 			};
 			return state;
 		},
@@ -58,8 +66,11 @@ const createObject = (type, img, x, y) => {
 		},
 		draw(delta) {
 			const image = this.getImage();
+			const state = this.getState();
 
-			if (this.state().mirrored) {
+			const isMirrored = state.mirrored && !state.turning;
+			const isTurningAndMirrored = state.turning && this.x >= Math.round(this.targetX);
+			if (isMirrored || isTurningAndMirrored) {
 				context.save();
 				context.scale(-1, 1);
 				context.drawImage(image.data[Math.floor(this.currentFrame)], -this.x - this.getWidth(), this.y, this.getWidth(), this.getHeight());
@@ -77,6 +88,7 @@ const createObject = (type, img, x, y) => {
 
 				if (this.currentFrame >= LAST_FRAME) {
 					if (image.type == 'once') {
+						if (state.turning) this.isTurning = false;
 						return LAST_FRAME;
 					}
 
@@ -92,6 +104,8 @@ const createObject = (type, img, x, y) => {
 		},
 		//move the object towards the target
 		moveTowardsTarget(delta) {
+			if (this.getState().turning) return;
+
 			const deltaSpeed = (delta / FPS_60) * this.speed;
 			this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
 			this.y = Math.abs(this.targetY - this.y) <= deltaSpeed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * deltaSpeed;
@@ -100,9 +114,11 @@ const createObject = (type, img, x, y) => {
 			const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= this.speed && Math.abs(this.y - this.targetY) <= this.speed;
 			const isTargetSetToNegativeOne = this.targetX === -1 && this.targetY === -1;
 			if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
-				//set a new target
-				this.targetX = Math.random() * (canvas.width - this.getWidth());
-				this.targetY = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT;
+				setTargetAndHandleTurningState(
+					this,
+					Math.random() * (canvas.width - this.getWidth()),
+					horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT
+				);
 			}
 		},
 		targetNearestEntry(type, radius, horizontalOnly = false) {
@@ -110,8 +126,7 @@ const createObject = (type, img, x, y) => {
 
 			//if there is a Nearest entry; move towards it
 			if (nearest.entry) {
-				this.targetX = nearest.entry.x;
-				this.targetY = horizontalOnly ? this.y : nearest.entry.y;
+				setTargetAndHandleTurningState(this, nearest.entry.x, horizontalOnly ? this.y : nearest.entry.y);
 
 				//if close enough to the entry
 				if (nearest.distance < radius) {

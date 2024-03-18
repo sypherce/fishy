@@ -26,14 +26,14 @@ const createFriend = async (x, y) => {
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 		this.addMoney(quality);
 	};
-	object.state = function () {
+	object.getState = function () {
 		const state = {
 			mirrored: this.x <= Math.round(this.targetX),
 		};
 		return state;
 	};
 	object.update = function (delta) {
-		const state = this.state();
+		const state = this.getState();
 		const entryFound = this.targetNearestEntry('money', 50, true);
 		if (!entryFound) this.targetRandomLocation(true);
 		this.moveTowardsTarget(delta);
