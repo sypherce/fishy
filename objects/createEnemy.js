@@ -49,7 +49,7 @@ const createEnemy = async (x, y) => {
 			attacked: this.attacked,
 			hungry: this.hp <= 75 && this.hp > 0,
 			dead: this.hp <= 0,
-			mirrored: this.x <= Math.round(this.targetX),
+			mirrored: this.isMirrored,
 			turning: this.isTurning,
 		};
 		return state;
@@ -75,7 +75,7 @@ const createEnemy = async (x, y) => {
 		const state = this.getState();
 		if (state.turning) {
 			if (this.animationIndex != 1) this.setAnimationIndex(1);
-			return object.image.turning;
+			return this.image.turning;
 		}
 		if (this.animationIndex != 0) this.setAnimationIndex(0);
 

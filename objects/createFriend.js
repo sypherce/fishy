@@ -28,7 +28,7 @@ const createFriend = async (x, y) => {
 	};
 	object.getState = function () {
 		const state = {
-			mirrored: this.x <= Math.round(this.targetX),
+			mirrored: this.isMirrored,
 		};
 		return state;
 	};

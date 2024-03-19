@@ -40,7 +40,7 @@ const createFish = async (x, y) => {
 			hungry: this.hp <= 75 && this.hp > 50,
 			starving: this.hp <= 50 && this.hp > 0,
 			dead: this.hp <= 0,
-			mirrored: this.x <= Math.round(this.targetX),
+			mirrored: this.isMirrored,
 			turning: this.isTurning,
 		};
 		return state;

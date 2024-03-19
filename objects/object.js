@@ -15,6 +15,10 @@ const createObject = (type, img, x, y) => {
 
 	function setTargetAndHandleTurningState(object, x, y) {
 		const savedState = object.getState();
+		if (x < object.x) object.isMirrored = false;
+		else if (x > object.x) object.isMirrored = true;
+		//don't change object.isMirrored if(x === object.x)
+
 		object.targetX = x;
 		object.targetY = y;
 		if (savedState.mirrored != object.getState().mirrored) object.isTurning = true;
@@ -32,6 +36,7 @@ const createObject = (type, img, x, y) => {
 		drawFPS: 8,
 		animationIndex: 0,
 		isTurning: false,
+		isMirrored: false,
 
 		quality: 100, //0.0-100.0 0 is bad, 100 is good
 		getWidth() {
@@ -50,7 +55,7 @@ const createObject = (type, img, x, y) => {
 
 		getState() {
 			const state = {
-				mirrored: this.x <= Math.round(this.targetX),
+				mirrored: this.isMirrored,
 				turning: this.isTurning,
 			};
 			return state;
@@ -114,11 +119,9 @@ const createObject = (type, img, x, y) => {
 			const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= this.speed && Math.abs(this.y - this.targetY) <= this.speed;
 			const isTargetSetToNegativeOne = this.targetX === -1 && this.targetY === -1;
 			if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
-				setTargetAndHandleTurningState(
-					this,
-					Math.random() * (canvas.width - this.getWidth()),
-					horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT
-				);
+				const x = Math.random() * (canvas.width - this.getWidth());
+				const y = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT;
+				setTargetAndHandleTurningState(this, x, y);
 			}
 		},
 		targetNearestEntry(type, radius, horizontalOnly = false) {

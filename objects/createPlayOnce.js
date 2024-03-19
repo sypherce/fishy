@@ -11,7 +11,7 @@ const createPlayOnce = (img, x, y) => {
 	object.setAnimationIndex(object.quality / 100 - 1);
 	object.getState = function () {
 		const state = {
-			mirrored: this.x <= Math.round(this.targetX),
+			mirrored: this.isMirrored,
 		};
 		return state;
 	};
