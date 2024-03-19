@@ -21,7 +21,7 @@ const createEnemy = async (x, y) => {
 	const object = createObject('enemy', img, x, y);
 	object.hp = 100;
 	object.speed = 3;
-	object.attacked = false; //flag for attacked enemy knockback
+	object.isAttacked = false; //flag for attacked enemy knockback
 	object.eat = function (quality) {
 		playSound(`${DATA_PATH}/sounds/converted/chomp${randomNumber(2)}.ogg`);
 		this.hp += quality;
@@ -30,7 +30,7 @@ const createEnemy = async (x, y) => {
 	object.attack = function (weaponQuality, x, y) {
 		const SPEED = 50;
 		this.hp -= weaponQuality;
-		this.attacked = true;
+		this.isAttacked = true;
 		//move the enemy away from the attack point
 		if (Math.abs(x - this.x) < Math.abs(this.x + this.getWidth() - x)) {
 			this.targetX = this.x + SPEED;
@@ -46,7 +46,7 @@ const createEnemy = async (x, y) => {
 	};
 	object.getState = function () {
 		const state = {
-			attacked: this.attacked,
+			attacked: this.isAttacked,
 			hungry: this.hp <= 75 && this.hp > 0,
 			dead: this.hp <= 0,
 			mirrored: this.isMirrored,
@@ -60,7 +60,7 @@ const createEnemy = async (x, y) => {
 			this.handleRemoval();
 		} else if (state.attacked) {
 			if (this.x === this.targetX && this.y === this.targetY) {
-				this.attacked = false;
+				this.isAttacked = false;
 			}
 		} else if (state.hungry) {
 			const entryFound = this.targetNearestEntry('fish', 50);
@@ -74,10 +74,10 @@ const createEnemy = async (x, y) => {
 	object.getImage = function () {
 		const state = this.getState();
 		if (state.turning) {
-			if (this.animationIndex != 1) this.setAnimationIndex(1);
+			this.setAnimationIndex(1);
 			return this.image.turning;
 		}
-		if (this.animationIndex != 0) this.setAnimationIndex(0);
+		this.setAnimationIndex(0);
 
 		return object.image.default;
 	};
