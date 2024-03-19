@@ -13,15 +13,19 @@ const createObject = (type, img, x, y) => {
 	const FLOOR_HEIGHT = 40;
 	const FPS_60 = 1000.0 / 60.0;
 
-	function setTargetAndHandleTurningState(object, x, y) {
-		const savedState = object.getState();
+	function setTargetHandleTurningMirrorStates(object, x, y) {
+		const savedMirrorState = object.getState().mirrored;
+		//handle mirror
 		if (x < object.x) object.isMirrored = false;
 		else if (x > object.x) object.isMirrored = true;
-		//don't change object.isMirrored if(x === object.x)
+		//x === object.x isMirrored keeps value
 
+		//set target
 		object.targetX = x;
 		object.targetY = y;
-		if (savedState.mirrored != object.getState().mirrored) object.isTurning = true;
+
+		//handle turning
+		if (savedMirrorState !== object.getState().mirrored) object.isTurning = true;
 	}
 	const ImageObject = {
 		type: type,
@@ -73,9 +77,9 @@ const createObject = (type, img, x, y) => {
 			const image = this.getImage();
 			const state = this.getState();
 
-			const isMirrored = state.mirrored && !state.turning;
-			const isTurningAndMirrored = state.turning && this.x >= Math.round(this.targetX);
-			if (isMirrored || isTurningAndMirrored) {
+			const isMirroredNotTurning = state.mirrored && !state.turning;
+			const isMirroredAndTurning = state.turning && this.x >= Math.round(this.targetX);
+			if (isMirroredNotTurning || isMirroredAndTurning) {
 				context.save();
 				context.scale(-1, 1);
 				context.drawImage(image.data[Math.floor(this.currentFrame)], -this.x - this.getWidth(), this.y, this.getWidth(), this.getHeight());
@@ -121,7 +125,7 @@ const createObject = (type, img, x, y) => {
 			if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
 				const x = Math.random() * (canvas.width - this.getWidth());
 				const y = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT;
-				setTargetAndHandleTurningState(this, x, y);
+				setTargetHandleTurningMirrorStates(this, x, y);
 			}
 		},
 		targetNearestEntry(type, radius, horizontalOnly = false) {
@@ -129,7 +133,7 @@ const createObject = (type, img, x, y) => {
 
 			//if there is a Nearest entry; move towards it
 			if (nearest.entry) {
-				setTargetAndHandleTurningState(this, nearest.entry.x, horizontalOnly ? this.y : nearest.entry.y);
+				setTargetHandleTurningMirrorStates(this, nearest.entry.x, horizontalOnly ? this.y : nearest.entry.y);
 
 				//if close enough to the entry
 				if (nearest.distance < radius) {
