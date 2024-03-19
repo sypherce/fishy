@@ -12,17 +12,14 @@ import createObject from './object.js';
  * @returns {Promise<ImageObject>} - The created object.
  */
 const createFish = async (x, y) => {
-	const defaultFilename = `${DATA_PATH}/images/smallswim.gif`;
-	const hungryFilename = `${DATA_PATH}/images/hungryswim.gif`;
-	const deadFilename = `${DATA_PATH}/images/smalldie.gif`;
-	const turningFilename = `${DATA_PATH}/images/smallturn.gif`;
+	const IMAGE_PATH = `${DATA_PATH}/images`;
 	const rows = 5;
 	const columns = 10;
 	const img = {
-		default: await loadSpriteSheet(defaultFilename, rows, columns),
-		hungry: await loadSpriteSheet(hungryFilename, rows, columns),
-		dead: await loadSpriteSheet(deadFilename, rows, columns, 'once'),
-		turning: await loadSpriteSheet(turningFilename, rows, columns, 'once'),
+		default: await loadSpriteSheet(`${IMAGE_PATH}/smallswim.gif`, rows, columns),
+		hungry: await loadSpriteSheet(`${IMAGE_PATH}/hungryswim.gif`, rows, columns),
+		dead: await loadSpriteSheet(`${IMAGE_PATH}/smalldie.gif`, rows, columns, 'once'),
+		turning: await loadSpriteSheet(`${IMAGE_PATH}/smallturn.gif`, rows, columns, 'once'),
 	};
 
 	const object = createObject('fish', img, x, y);
