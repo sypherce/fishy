@@ -39,6 +39,9 @@ function playSound(filename) {
 	return sound;
 }
 
+function getMusicVolume() {
+	return musicVolume;
+}
 function setMusicVolume(volume) {
 	musicVolume = volume;
 	if (music) music.volume(volume);
@@ -51,4 +54,4 @@ function setSoundVolume(volume) {
 	});
 }
 
-export { playMusic, playSound, setMusicVolume, setSoundVolume };
+export { playMusic, playSound, getMusicVolume, setMusicVolume, setSoundVolume };

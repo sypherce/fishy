@@ -2,7 +2,7 @@
 import { entryArray, entryIntersects } from './core/entry.js';
 import { DATA_PATH, canvas, context, randomNumber } from './core/globals.js';
 import { applyAlphaMask, loadImage, loadSpriteSheet } from './core/image.js';
-import { playMusic, playSound, setMusicVolume, setSoundVolume } from './core/sound.js';
+import { playMusic, playSound, getMusicVolume, setMusicVolume, setSoundVolume } from './core/sound.js';
 import createEnemy from './objects/createEnemy.js';
 import createFish from './objects/createFish.js';
 import createFood from './objects/createFood.js';
@@ -60,7 +60,8 @@ const init = (async () => {
 			}
 			//menu button position
 			else if (x >= 526 && x <= 622 && y <= 30) {
-				setMusicVolume(0.0);
+				if (getMusicVolume()) setMusicVolume(0.0);
+				else setMusicVolume(1.0);
 			}
 			return;
 		}
@@ -113,7 +114,8 @@ const init = (async () => {
 	}
 	document.addEventListener('keydown', handleKeyDown);
 
-	//playMusic(`${DATA_PATH}/music/converted/Insaniq2.mp3`);
+	playMusic(`${DATA_PATH}/music/converted/Insaniq2.mp3`);
+	setMusicVolume(0.0);
 
 	async function addEnemy() {
 		const ENEMY_RESWPAN_TIME = 60 * 1000;
@@ -140,7 +142,7 @@ const init = (async () => {
 	await addFriend();
 
 	// add fish
-	for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < 3; i++) {
 		entryArray.push(await new createFish(Math.random() * canvas.width, Math.random() * canvas.height).init());
 	}
 
