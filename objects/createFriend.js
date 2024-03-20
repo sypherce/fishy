@@ -27,6 +27,13 @@ class createFriend extends createObject {
 		return this;
 	}
 
+	update(delta) {
+		const state = this.getState();
+		const entryFound = this.targetNearestEntry('money', 50, true);
+		if (!entryFound) this.targetRandomLocation(true);
+		this.moveTowardsTarget(delta);
+	}
+
 	eat(quality) {
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 		this.addMoney(quality);
@@ -37,17 +44,6 @@ class createFriend extends createObject {
 			mirrored: this.isMirrored,
 		};
 		return state;
-	}
-
-	update(delta) {
-		const state = this.getState();
-		const entryFound = this.targetNearestEntry('money', 50, true);
-		if (!entryFound) this.targetRandomLocation(true);
-		this.moveTowardsTarget(delta);
-	}
-
-	getImage() {
-		return this.image.default;
 	}
 }
 

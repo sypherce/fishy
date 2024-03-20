@@ -41,11 +41,10 @@ class createFish extends createObject {
 
 	getState() {
 		const state = {
+			...super.getState(),
 			hungry: this.hp <= 75 && this.hp > 50,
 			starving: this.hp <= 50 && this.hp > 0,
 			dead: this.hp <= 0,
-			mirrored: this.isMirrored,
-			turning: this.isTurning,
 		};
 		return state;
 	}

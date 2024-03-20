@@ -54,11 +54,10 @@ class createEnemy extends createObject {
 
 	getState() {
 		const state = {
+			...super.getState(),
 			attacked: this.isAttacked,
 			hungry: this.hp <= 75 && this.hp > 0,
 			dead: this.hp <= 0,
-			mirrored: this.isMirrored,
-			turning: this.isTurning,
 		};
 		return state;
 	}

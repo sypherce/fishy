@@ -13,7 +13,7 @@ class createStationary extends createObject {
 		this.setAnimationIndex(this.quality / 100 - 1);
 	}
 
-	update() {}
+	update(delta) {}
 }
 
 export default createStationary;

@@ -10,9 +10,9 @@ class createPlayOnce extends createObject {
 	constructor(img, x, y) {
 		super('playOnce', img, x, y);
 		this.setAnimationIndex(this.quality / 100 - 1);
+		this.drawFPS = 60;
 	}
 
-	drawFPS = 60;
 	draw(delta) {
 		// Initialize previousFrame on first draw
 		this.previousFrame ??= this.currentFrame;
@@ -26,10 +26,6 @@ class createPlayOnce extends createObject {
 	}
 
 	update(delta) {}
-
-	getImage() {
-		return this.image.default;
-	}
 }
 
 export default createPlayOnce;
