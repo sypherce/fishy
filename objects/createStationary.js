@@ -7,21 +7,13 @@ import createObject from './object.js';
  * @param {number} y - The y-coordinate of the object.
  * @returns {ImageObject} - The created object.
  */
-const createStationary = (img, x, y) => {
-	const object = createObject('stationary', img, x, y);
-	object.setAnimationIndex(object.quality / 100 - 1);
-	object.getState = function () {
-		const state = {
-			mirrored: this.isMirrored,
-		};
-		return state;
-	};
-	object.update = function () {};
-	object.getImage = function () {
-		return object.image.default;
-	};
+class createStationary extends createObject {
+	constructor(img, x, y) {
+		super('stationary', img, x, y);
+		this.setAnimationIndex(this.quality / 100 - 1);
+	}
 
-	return object;
-};
+	update() {}
+}
 
 export default createStationary;

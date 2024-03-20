@@ -9,19 +9,22 @@ import createObject from './object.js';
  * @param {number} [quality=1] - The quality of the food object (default is 1).
  * @returns {Promise<ImageObject>} - The created object.
  */
-const createFood = async (x, y, quality = 1) => {
-	const defaultFilename = `${DATA_PATH}/images/food.gif`;
-	const rows = 5;
-	const columns = 10;
-	const img = {
-		default: await loadSpriteSheet(defaultFilename, rows, columns),
-	};
+class createFood extends createObject {
+	constructor(x, y, quality = 1) {
+		super('food', {}, x, y);
+		this.quality = 100 * quality;
+		this.setAnimationIndex(this.quality / 100 - 1);
+	}
 
-	const object = createObject('food', img, x, y);
-	object.quality = 100 * quality;
-	object.setAnimationIndex(object.quality / 100 - 1);
-
-	return object;
-};
+	async init() {
+		const defaultFilename = `${DATA_PATH}/images/food.gif`;
+		const rows = 5;
+		const columns = 10;
+		this.image = {
+			default: await loadSpriteSheet(defaultFilename, rows, columns),
+		};
+		return this;
+	}
+}
 
 export default createFood;

@@ -11,38 +11,44 @@ import createObject from './object.js';
  * @param {number} y - The y-coordinate of the object.
  * @returns {Promise<ImageObject>} - The created object.
  */
-const createFriend = async (x, y) => {
-	const defaultFilename = `${DATA_PATH}/images/stinky.gif`;
-	const rows = 3;
-	const columns = 10;
-	const img = {
-		default: await loadSpriteSheet(defaultFilename, rows, columns),
-	};
+class createFriend extends createObject {
+	constructor(x, y) {
+		super('friend', {}, x, y);
+		this.setAnimationIndex(0);
+		this.speed = 2;
+	}
+	async init() {
+		const defaultFilename = `${DATA_PATH}/images/stinky.gif`;
+		const rows = 3;
+		const columns = 10;
+		this.image = {
+			default: await loadSpriteSheet(defaultFilename, rows, columns),
+		};
+		return this;
+	}
 
-	const object = createObject('friend', img, x, y);
-	object.setAnimationIndex(0);
-	object.speed = 2;
-	object.eat = function (quality) {
+	eat(quality) {
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 		this.addMoney(quality);
-	};
-	object.getState = function () {
+	}
+
+	getState() {
 		const state = {
 			mirrored: this.isMirrored,
 		};
 		return state;
-	};
-	object.update = function (delta) {
+	}
+
+	update(delta) {
 		const state = this.getState();
 		const entryFound = this.targetNearestEntry('money', 50, true);
 		if (!entryFound) this.targetRandomLocation(true);
 		this.moveTowardsTarget(delta);
-	};
-	object.getImage = function () {
-		return object.image.default;
-	};
+	}
 
-	return object;
-};
+	getImage() {
+		return this.image.default;
+	}
+}
 
 export default createFriend;

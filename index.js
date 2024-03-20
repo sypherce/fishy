@@ -69,7 +69,7 @@ const init = (() => {
 			playSound(`${DATA_PATH}/sounds/converted/zap.ogg`);
 			const spriteSheet = await loadSpriteSheet(`${DATA_PATH}/images/lasers.gif`, 6, 10);
 			entryArray.push(
-				await createPlayOnce(
+				new createPlayOnce(
 					{
 						default: spriteSheet,
 					},
@@ -99,7 +99,7 @@ const init = (() => {
 		const foodArray = entryArray.filter((entry) => entry.type === 'food');
 		if (!enemyPresent && foodArray.length < maxFood && enoughMoney(FOOD_COST)) {
 			currentMoney -= FOOD_COST;
-			entryArray.push(await createFood(x, y, foodQuality));
+			entryArray.push(await new createFood(x, y, foodQuality).init());
 			playSound(`${DATA_PATH}/sounds/DROPFOOD.ogg`);
 		}
 	}
@@ -118,7 +118,7 @@ const init = (() => {
 		if (entryArray.filter((entry) => entry.type === 'enemy').length === 0) {
 			playSound(`${DATA_PATH}/sounds/AWOOGA.ogg`);
 			setTimeout(async () => {
-				entryArray.push(await createEnemy(1, 10));
+				entryArray.push(await new createEnemy(1, 10).init());
 				setTimeout(() => {
 					playSound(`${DATA_PATH}/sounds/ROAR.ogg`);
 				}, 500 + Math.random() * 500);
@@ -133,7 +133,7 @@ const init = (() => {
 		await addEnemy();
 
 		async function addFriend() {
-			const stinky = await createFriend(1, 400);
+			const stinky = await new createFriend(1, 400).init();
 			stinky.addMoney = function (amount) {
 				currentMoney += amount;
 			};
@@ -142,21 +142,21 @@ const init = (() => {
 		await addFriend();
 
 		for (let i = 0; i < 10; i++) {
-			entryArray.push(await createFish(Math.random() * canvas.width, Math.random() * canvas.height));
+			entryArray.push(await new createFish(Math.random() * canvas.width, Math.random() * canvas.height).init());
 		}
 		images['background'] = await loadImage(`${DATA_PATH}/images/aquarium2.jpg`);
 		images['menuBar'] = await applyAlphaMask(`${DATA_PATH}/images/menubar.gif`);
 		images['menuButton'] = await applyAlphaMask(`${DATA_PATH}/images/mbuttonu.gif`);
 		images['menuButtonReflection'] = await applyAlphaMask(`${DATA_PATH}/images/_MBREFLECTION.gif`);
 
-		images['buttonSprite0'] = await createStationary(
+		images['buttonSprite0'] = new createStationary(
 			{
 				default: await loadSpriteSheet(`${DATA_PATH}/images/smallswim.gif`, 5, 10),
 			},
 			buttonPositions[0] - 13,
 			-15
 		);
-		images['buttonSprite1'] = await createStationary(
+		images['buttonSprite1'] = new createStationary(
 			{
 				default: await loadSpriteSheet(`${DATA_PATH}/images/food.gif`, 5, 10),
 			},

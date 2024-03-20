@@ -6,34 +6,30 @@ import createObject from './object.js';
  * @param {number} y - The y-coordinate of the object.
  * @returns {ImageObject} - The created object.
  */
-const createPlayOnce = (img, x, y) => {
-	const object = createObject('playOnce', img, x, y);
-	object.setAnimationIndex(object.quality / 100 - 1);
-	object.getState = function () {
-		const state = {
-			mirrored: this.isMirrored,
-		};
-		return state;
-	};
-	object.drawFPS = 60;
-	object.savedDraw = object.draw;
-	object.draw = function (delta) {
-		// Initialize previousFrame on first draw
-		object.previousFrame ??= this.currentFrame;
+class createPlayOnce extends createObject {
+	constructor(img, x, y) {
+		super('playOnce', img, x, y);
+		this.setAnimationIndex(this.quality / 100 - 1);
+	}
 
-		if (object.previousFrame > this.currentFrame) {
+	drawFPS = 60;
+	draw(delta) {
+		// Initialize previousFrame on first draw
+		this.previousFrame ??= this.currentFrame;
+
+		if (this.previousFrame > this.currentFrame) {
 			this.handleRemoval();
 			return;
 		}
-		object.previousFrame = this.currentFrame;
-		object.savedDraw(delta);
-	};
-	object.update = function (delta) {};
-	object.getImage = function () {
-		return object.image.default;
-	};
+		this.previousFrame = this.currentFrame;
+		super.draw(delta);
+	}
 
-	return object;
-};
+	update(delta) {}
+
+	getImage() {
+		return this.image.default;
+	}
+}
 
 export default createPlayOnce;

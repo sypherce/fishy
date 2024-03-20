@@ -11,28 +11,35 @@ import createObject from './object.js';
  * @param {number} y - The y-coordinate of the object.
  * @returns {Promise<ImageObject>} - The created object.
  */
-const createFish = async (x, y) => {
-	const IMAGE_PATH = `${DATA_PATH}/images`;
-	const rows = 5;
-	const columns = 10;
-	const img = {
-		default: await loadSpriteSheet(`${IMAGE_PATH}/smallswim.gif`, rows, columns),
-		hungry: await loadSpriteSheet(`${IMAGE_PATH}/hungryswim.gif`, rows, columns),
-		dead: await loadSpriteSheet(`${IMAGE_PATH}/smalldie.gif`, rows, columns, 'once'),
-		turning: await loadSpriteSheet(`${IMAGE_PATH}/smallturn.gif`, rows, columns, 'once'),
-	};
+class createFish extends createObject {
+	constructor(x, y) {
+		super('fish', {}, x, y);
+		this.setAnimationIndex(this.quality / 100 - 1);
+		this.hp = 100;
+		this.moneyGenerationLevel = 0;
+		this.speed = 2;
+	}
 
-	const object = createObject('fish', img, x, y);
-	object.setAnimationIndex(object.quality / 100 - 1);
-	object.hp = 100;
-	object.moneyGenerationLevel = 0;
-	object.speed = 2;
-	object.eat = function (quality) {
+	async init() {
+		const IMAGE_PATH = `${DATA_PATH}/images`;
+		const rows = 5;
+		const columns = 10;
+		this.image = {
+			default: await loadSpriteSheet(`${IMAGE_PATH}/smallswim.gif`, rows, columns),
+			hungry: await loadSpriteSheet(`${IMAGE_PATH}/hungryswim.gif`, rows, columns),
+			dead: await loadSpriteSheet(`${IMAGE_PATH}/smalldie.gif`, rows, columns, 'once'),
+			turning: await loadSpriteSheet(`${IMAGE_PATH}/smallturn.gif`, rows, columns, 'once'),
+		};
+		return this;
+	}
+
+	eat(quality) {
 		playSound(`${DATA_PATH}/sounds/SLURP${randomNumber(3)}.ogg`);
 		this.hp += quality;
 		if (this.hp > 100) this.hp = 100;
-	};
-	object.getState = function () {
+	}
+
+	getState() {
 		const state = {
 			hungry: this.hp <= 75 && this.hp > 50,
 			starving: this.hp <= 50 && this.hp > 0,
@@ -41,8 +48,9 @@ const createFish = async (x, y) => {
 			turning: this.isTurning,
 		};
 		return state;
-	};
-	object.update = function (delta) {
+	}
+
+	update(delta) {
 		const FPS_60 = 1000.0 / 60.0;
 		const state = this.getState();
 		if (state.dead) {
@@ -69,20 +77,19 @@ const createFish = async (x, y) => {
 		(async () => {
 			if (this.moneyGenerationLevel >= 100) {
 				this.moneyGenerationLevel = 0;
-				entryArray.push(await createMoney(this.x, this.y));
+				entryArray.push(await new createMoney(this.x, this.y).init());
 			}
 		})();
-	};
-	object.getImage = function () {
+	}
+
+	getImage() {
 		const state = this.getState();
-		if (state.dead) return object.image.dead;
-		if (state.turning) return object.image.turning;
-		if (state.starving) return object.image.hungry;
+		if (state.dead) return this.image.dead;
+		if (state.turning) return this.image.turning;
+		if (state.starving) return this.image.hungry;
 
-		return object.image.default;
-	};
-
-	return object;
-};
+		return this.image.default;
+	}
+}
 
 export default createFish;

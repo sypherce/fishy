@@ -9,25 +9,32 @@ import createObject from './object.js';
  * @param {number} y - The y-coordinate of the object.
  * @returns {Promise<ImageObject>} - The created object.
  */
-const createEnemy = async (x, y) => {
-	const defaultFilename = `${DATA_PATH}/images/balrog.gif`;
-	const rows = 2;
-	const columns = 10;
-	const img = {
-		default: await loadSpriteSheet(defaultFilename, rows, columns),
-		turning: await loadSpriteSheet(defaultFilename, rows, columns, 'once'),
-	};
+class createEnemy extends createObject {
+	constructor(x, y) {
+		super('enemy', {}, x, y);
+		this.hp = 100;
+		this.speed = 3;
+		this.isAttacked = false;
+	}
 
-	const object = createObject('enemy', img, x, y);
-	object.hp = 100;
-	object.speed = 3;
-	object.isAttacked = false; //flag for attacked enemy knockback
-	object.eat = function (quality) {
+	async init() {
+		const defaultFilename = `${DATA_PATH}/images/balrog.gif`;
+		const rows = 2;
+		const columns = 10;
+		this.image = {
+			default: await loadSpriteSheet(defaultFilename, rows, columns),
+			turning: await loadSpriteSheet(defaultFilename, rows, columns, 'once'),
+		};
+		return this;
+	}
+
+	eat(quality) {
 		playSound(`${DATA_PATH}/sounds/converted/chomp${randomNumber(2)}.ogg`);
 		this.hp += quality;
 		if (this.hp > 100) this.hp = 100;
-	};
-	object.attack = function (weaponQuality, x, y) {
+	}
+
+	attack(weaponQuality, x, y) {
 		const SPEED = 50;
 		this.hp -= weaponQuality;
 		this.isAttacked = true;
@@ -43,8 +50,9 @@ const createEnemy = async (x, y) => {
 			this.targetY = this.y - SPEED;
 		}
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
-	};
-	object.getState = function () {
+	}
+
+	getState() {
 		const state = {
 			attacked: this.isAttacked,
 			hungry: this.hp <= 75 && this.hp > 0,
@@ -53,8 +61,9 @@ const createEnemy = async (x, y) => {
 			turning: this.isTurning,
 		};
 		return state;
-	};
-	object.update = function (delta) {
+	}
+
+	update(delta) {
 		const state = this.getState();
 		if (state.dead) {
 			this.handleRemoval();
@@ -70,8 +79,9 @@ const createEnemy = async (x, y) => {
 		}
 		this.moveTowardsTarget(delta);
 		this.hp -= 0.01;
-	};
-	object.getImage = function () {
+	}
+
+	getImage() {
 		const state = this.getState();
 		if (state.turning) {
 			this.setAnimationIndex(1);
@@ -79,10 +89,8 @@ const createEnemy = async (x, y) => {
 		}
 		this.setAnimationIndex(0);
 
-		return object.image.default;
-	};
-
-	return object;
-};
+		return this.image.default;
+	}
+}
 
 export default createEnemy;

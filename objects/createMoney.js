@@ -8,18 +8,21 @@ import createObject from './object.js';
  * @param {number} y - The y-coordinate of the object.
  * @returns {Promise<ImageObject>} - The created object.
  */
-const createMoney = async (x, y) => {
-	const defaultFilename = `${DATA_PATH}/images/money.gif`;
-	const rows = 5;
-	const columns = 10;
-	const img = {
-		default: await loadSpriteSheet(defaultFilename, rows, columns),
-	};
+class createMoney extends createObject {
+	constructor(x, y) {
+		super('money', {}, x, y);
+		this.setAnimationIndex(this.quality / 100 - 1);
+	}
 
-	const object = createObject('money', img, x, y);
-	object.setAnimationIndex(object.quality / 100 - 1);
-
-	return object;
-};
+	async init() {
+		const defaultFilename = `${DATA_PATH}/images/money.gif`;
+		const rows = 5;
+		const columns = 10;
+		this.image = {
+			default: await loadSpriteSheet(defaultFilename, rows, columns),
+		};
+		return this;
+	}
+}
 
 export default createMoney;
