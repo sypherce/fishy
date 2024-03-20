@@ -23,8 +23,14 @@ class createFriend extends createObject {
 		const columns = 10;
 		this.imageGroup = {
 			default: await loadSpriteSheet(defaultFilename, rows, columns),
+			turning: await loadSpriteSheet(defaultFilename, rows, columns, 'once'),
 		};
 		return this;
+	}
+
+	eat(quality) {
+		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
+		this.addMoney(quality);
 	}
 
 	update(delta) {
@@ -34,17 +40,15 @@ class createFriend extends createObject {
 		this.moveTowardsTarget(delta);
 	}
 
-	eat(quality) {
-		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
-		this.addMoney(quality);
-	}
+	get image() {
+		const state = this.state;
+		if (state.turning) {
+			this.animationIndex = 1;
+			return this.imageGroup.turning;
+		}
+		this.animationIndex = 0;
 
-	get state() {
-		const state = {
-			...super.state,
-			turning: false,
-		};
-		return state;
+		return this.imageGroup.default;
 	}
 }
 
