@@ -21,7 +21,7 @@ class createEnemy extends createObject {
 		const defaultFilename = `${DATA_PATH}/images/balrog.gif`;
 		const rows = 2;
 		const columns = 10;
-		this.image = {
+		this.imageGroup = {
 			default: await loadSpriteSheet(defaultFilename, rows, columns),
 			turning: await loadSpriteSheet(defaultFilename, rows, columns, 'once'),
 		};
@@ -39,12 +39,12 @@ class createEnemy extends createObject {
 		this.hp -= weaponQuality;
 		this.isAttacked = true;
 		//move the enemy away from the attack point
-		if (Math.abs(x - this.x) < Math.abs(this.x + this.getWidth() - x)) {
+		if (Math.abs(x - this.x) < Math.abs(this.x + this.width - x)) {
 			this.targetX = this.x + SPEED;
 		} else {
 			this.targetX = this.x - SPEED;
 		}
-		if (Math.abs(y - this.y) < Math.abs(this.y + this.getHeight() - y)) {
+		if (Math.abs(y - this.y) < Math.abs(this.y + this.height - y)) {
 			this.targetY = this.y + SPEED;
 		} else {
 			this.targetY = this.y - SPEED;
@@ -52,9 +52,13 @@ class createEnemy extends createObject {
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 	}
 
-	getState() {
+	set state(args) {
+		super.state = args;
+	}
+
+	get state() {
 		const state = {
-			...super.getState(),
+			...super.state,
 			attacked: this.isAttacked,
 			hungry: this.hp <= 75 && this.hp > 0,
 			dead: this.hp <= 0,
@@ -63,7 +67,7 @@ class createEnemy extends createObject {
 	}
 
 	update(delta) {
-		const state = this.getState();
+		const state = this.state;
 		if (state.dead) {
 			this.handleRemoval();
 		} else if (state.attacked) {
@@ -80,15 +84,15 @@ class createEnemy extends createObject {
 		this.hp -= 0.01;
 	}
 
-	getImage() {
-		const state = this.getState();
+	get image() {
+		const state = this.state;
 		if (state.turning) {
-			this.setAnimationIndex(1);
-			return this.image.turning;
+			this.animationIndex = 1;
+			return this.imageGroup.turning;
 		}
-		this.setAnimationIndex(0);
+		this.animationIndex = 0;
 
-		return this.image.default;
+		return this.imageGroup.default;
 	}
 }
 

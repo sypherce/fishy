@@ -17,25 +17,29 @@ class createObject {
 		this.type = type;
 		this.x = x;
 		this.y = y;
-		this.image = img;
+		this.imageGroup = img;
 		this.context = context;
 		this.targetX = -1;
 		this.targetY = -1;
 		this.speed = 0;
 		this.currentFrame = 0;
 		this.drawFPS = 8;
-		this.animationIndex = 0;
-		this.isTurning = false;
-		this.isMirrored = false;
 		this.quality = 100; //0.0-100.0 0 is bad, 100 is good
 	}
+	#animationIndex = 0;
+	#isMirrored = false;
+	#isTurning = false;
+	#lastState = {
+		mirrored: false,
+		turning: false,
+	};
 
-	getWidth() {
-		return this.getImage().data[0].width;
+	get width() {
+		return this.image.data[0].width;
 	}
 
-	getHeight() {
-		return this.getImage().data[0].height;
+	get height() {
+		return this.image.data[0].height;
 	}
 
 	update(delta) {
@@ -46,38 +50,58 @@ class createObject {
 		if (this.y >= canvas.height - FLOOR_HEIGHT) this.handleRemoval();
 	}
 
-	getState() {
+	set state(args) {
+		if (args.mirrored !== undefined) this.#isMirrored = args.mirrored;
+		if (args.turning !== undefined) this.#isTurning = args.turning;
+	}
+
+	get state() {
+		//determine if the object is mirrored
+		if (this.targetX < this.x) this.#isMirrored = false;
+		else if (this.targetX > this.x) this.#isMirrored = true;
+		//else this.#isMirrored = this.#isMirrored;
+
+		//determine if the object is turning
+		if (this.#lastState.mirrored !== this.#isMirrored) this.#isTurning = true;
+
 		const state = {
-			mirrored: this.isMirrored,
-			turning: this.isTurning,
+			mirrored: this.#isMirrored,
+			turning: this.#isTurning,
 		};
+		this.#lastState = state;
 		return state;
 	}
 
-	setAnimationIndex(value) {
-		if (this.animationIndex !== value) {
-			this.animationIndex = value;
-			this.currentFrame = value * this.image.default.columns;
+	/**
+	 * @param {number} value
+	 */
+	get animationIndex() {
+		return this.#animationIndex;
+	}
+	set animationIndex(value) {
+		if (this.#animationIndex !== value) {
+			this.#animationIndex = value;
+			this.currentFrame = value * this.image.columns;
 		}
 	}
 
-	getImage() {
-		return this.image.default;
+	get image() {
+		return this.imageGroup.default;
 	}
 
 	draw(delta) {
-		const image = this.getImage();
-		const state = this.getState();
+		const image = this.image;
+		const state = this.state;
 
 		const isMirroredNotTurning = state.mirrored && !state.turning;
 		const isMirroredAndTurning = state.turning && this.x >= Math.round(this.targetX);
 		if (isMirroredNotTurning || isMirroredAndTurning) {
 			context.save();
 			context.scale(-1, 1);
-			context.drawImage(image.data[Math.floor(this.currentFrame)], -this.x - this.getWidth(), this.y, this.getWidth(), this.getHeight());
+			context.drawImage(image.data[Math.floor(this.currentFrame)], -this.x - this.width, this.y, this.width, this.height);
 			context.restore();
 		} else {
-			context.drawImage(image.data[Math.floor(this.currentFrame)], this.x, this.y, this.getWidth(), this.getHeight());
+			context.drawImage(image.data[Math.floor(this.currentFrame)], this.x, this.y, this.width, this.height);
 		}
 
 		//update the current frame
@@ -89,7 +113,7 @@ class createObject {
 
 			if (this.currentFrame >= LAST_FRAME) {
 				if (image.type == 'once') {
-					if (state.turning) this.isTurning = false;
+					if (state.turning) this.state = { turning: false };
 					return LAST_FRAME;
 				}
 
@@ -105,7 +129,7 @@ class createObject {
 	}
 	//move the object towards the target
 	moveTowardsTarget(delta) {
-		if (this.getState().turning) return;
+		if (this.state.turning) return;
 
 		const deltaSpeed = (delta / FPS_60) * this.speed;
 		this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
@@ -116,9 +140,9 @@ class createObject {
 		const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= this.speed && Math.abs(this.y - this.targetY) <= this.speed;
 		const isTargetSetToNegativeOne = this.targetX === -1 && this.targetY === -1;
 		if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
-			const x = Math.random() * (canvas.width - this.getWidth());
-			const y = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.getHeight() - FLOOR_HEIGHT) + BAR_HEIGHT;
-			this.setTargetHandleTurningMirrorStates(x, y);
+			const x = Math.random() * (canvas.width - this.width);
+			const y = horizontalOnly ? this.y : Math.random() * (canvas.height - BAR_HEIGHT - this.height - FLOOR_HEIGHT) + BAR_HEIGHT;
+			this.setTarget(x, y);
 		}
 	}
 
@@ -127,7 +151,7 @@ class createObject {
 
 		//if there is a Nearest entry; move towards it
 		if (nearest.entry) {
-			this.setTargetHandleTurningMirrorStates(nearest.entry.x, horizontalOnly ? this.y : nearest.entry.y);
+			this.setTarget(nearest.entry.x, horizontalOnly ? this.y : nearest.entry.y);
 
 			//if close enough to the entry
 			if (nearest.distance < radius) {
@@ -139,19 +163,9 @@ class createObject {
 		return false;
 	}
 
-	setTargetHandleTurningMirrorStates(x, y) {
-		const savedMirrorState = this.getState().mirrored;
-		//handle mirror
-		if (x < this.x) this.isMirrored = false;
-		else if (x > this.x) this.isMirrored = true;
-		//x === object.x isMirrored keeps value
-
-		//set target
+	setTarget(x, y) {
 		this.targetX = x;
 		this.targetY = y;
-
-		//handle turning
-		if (savedMirrorState !== this.getState().mirrored) this.isTurning = true;
 	}
 }
 

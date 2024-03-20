@@ -6,25 +6,33 @@ import { playSound } from '../core/sound.js';
 import createMoney from './createMoney.js';
 import createObject from './object.js';
 
-/**Creates a fish object with the specified properties.
- * @param {number} x - The x-coordinate of the object.
- * @param {number} y - The y-coordinate of the object.
- * @returns {Promise<ImageObject>} - The created object.
+/**Represents a fish object with the specified properties.
+ * @class
+ * @extends createObject
  */
 class createFish extends createObject {
+	/**Creates a new fish object.
+	 * @constructor
+	 * @param {number} x - The x-coordinate of the fish object.
+	 * @param {number} y - The y-coordinate of the fish object.
+	 */
 	constructor(x, y) {
 		super('fish', {}, x, y);
-		this.setAnimationIndex(this.quality / 100 - 1);
+		this.animationIndex = this.quality / 100 - 1;
 		this.hp = 100;
 		this.moneyGenerationLevel = 0;
 		this.speed = 2;
 	}
 
+	/**Initializes the fish object.
+	 * @async
+	 * @returns {Promise<createFish>} The initialized fish object.
+	 */
 	async init() {
 		const IMAGE_PATH = `${DATA_PATH}/images`;
 		const rows = 5;
 		const columns = 10;
-		this.image = {
+		this.imageGroup = {
 			default: await loadSpriteSheet(`${IMAGE_PATH}/smallswim.gif`, rows, columns),
 			hungry: await loadSpriteSheet(`${IMAGE_PATH}/hungryswim.gif`, rows, columns),
 			dead: await loadSpriteSheet(`${IMAGE_PATH}/smalldie.gif`, rows, columns, 'once'),
@@ -33,25 +41,38 @@ class createFish extends createObject {
 		return this;
 	}
 
+	/**Increases the fish's health points (hp) by the specified quality.
+	 * If the resulting hp exceeds 100, it is capped at 100.
+	 * @param {number} quality - The quality of the food consumed.
+	 */
 	eat(quality) {
 		playSound(`${DATA_PATH}/sounds/SLURP${randomNumber(3)}.ogg`);
 		this.hp += quality;
 		if (this.hp > 100) this.hp = 100;
 	}
 
-	getState() {
+	/**Gets the state of the fish.
+	 * @returns {Object} The state of the fish.
+	 */
+	get state() {
 		const state = {
-			...super.getState(),
+			...super.state,
 			hungry: this.hp <= 75 && this.hp > 50,
 			starving: this.hp <= 50 && this.hp > 0,
 			dead: this.hp <= 0,
 		};
 		return state;
 	}
+	set state(args) {
+		super.state = args;
+	}
 
+	/**Updates the fish's state and behavior based on the given delta time.
+	 * @param {number} delta - The time elapsed since the last update in milliseconds.
+	 */
 	update(delta) {
 		const FPS_60 = 1000.0 / 60.0;
-		const state = this.getState();
+		const state = this.state;
 		if (state.dead) {
 			if (typeof this.alreadyDead === 'undefined') {
 				playSound(`${DATA_PATH}/sounds/DIE.ogg`);
@@ -81,13 +102,16 @@ class createFish extends createObject {
 		})();
 	}
 
-	getImage() {
-		const state = this.getState();
-		if (state.dead) return this.image.dead;
-		if (state.turning) return this.image.turning;
-		if (state.starving) return this.image.hungry;
+	/**Gets the image object for the fish based on its current state.
+	 * @returns {Object} The image object of the fish.
+	 */
+	get image() {
+		const state = this.state;
+		if (state.dead) return this.imageGroup.dead;
+		if (state.turning) return this.imageGroup.turning;
+		if (state.starving) return this.imageGroup.hungry;
 
-		return this.image.default;
+		return this.imageGroup.default;
 	}
 }
 

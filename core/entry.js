@@ -12,8 +12,8 @@ function entryIntersects(type, x, y) {
 	let foundEntry = -1;
 	const typeArray = entryArray.filter((entry) => entry.type === type);
 	typeArray.some((entry) => {
-		const xIntersect = entry.x < x && entry.x + entry.getWidth() > x;
-		const yIntersect = entry.y < y && entry.y + entry.getHeight() > y;
+		const xIntersect = entry.x < x && entry.x + entry.width > x;
+		const yIntersect = entry.y < y && entry.y + entry.height > y;
 
 		if (xIntersect && yIntersect) {
 			foundEntry = entry;

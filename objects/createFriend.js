@@ -14,21 +14,21 @@ import createObject from './object.js';
 class createFriend extends createObject {
 	constructor(x, y) {
 		super('friend', {}, x, y);
-		this.setAnimationIndex(0);
+		this.animationIndex = 0;
 		this.speed = 2;
 	}
 	async init() {
 		const defaultFilename = `${DATA_PATH}/images/stinky.gif`;
 		const rows = 3;
 		const columns = 10;
-		this.image = {
+		this.imageGroup = {
 			default: await loadSpriteSheet(defaultFilename, rows, columns),
 		};
 		return this;
 	}
 
 	update(delta) {
-		const state = this.getState();
+		const state = this.state;
 		const entryFound = this.targetNearestEntry('money', 50, true);
 		if (!entryFound) this.targetRandomLocation(true);
 		this.moveTowardsTarget(delta);
@@ -39,9 +39,10 @@ class createFriend extends createObject {
 		this.addMoney(quality);
 	}
 
-	getState() {
+	get state() {
 		const state = {
-			mirrored: this.isMirrored,
+			...super.state,
+			turning: false,
 		};
 		return state;
 	}

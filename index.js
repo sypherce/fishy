@@ -10,7 +10,7 @@ import createFriend from './objects/createFriend.js';
 import createPlayOnce from './objects/createPlayOnce.js';
 import createStationary from './objects/createStationary.js';
 
-const init = (() => {
+const init = (async () => {
 	let currentMoney = 300;
 	let weaponQuality = 30;
 	let maxFood = 1;
@@ -113,6 +113,8 @@ const init = (() => {
 	}
 	document.addEventListener('keydown', handleKeyDown);
 
+	//playMusic(`${DATA_PATH}/music/converted/Insaniq2.mp3`);
+
 	async function addEnemy() {
 		const ENEMY_RESWPAN_TIME = 60 * 1000;
 		if (entryArray.filter((entry) => entry.type === 'enemy').length === 0) {
@@ -126,44 +128,44 @@ const init = (() => {
 		}
 		return setTimeout(addEnemy, ENEMY_RESWPAN_TIME);
 	}
-	let images = [];
-	(async () => {
-		playMusic(`${DATA_PATH}/music/converted/Insaniq2.mp3`);
+	await addEnemy();
 
-		await addEnemy();
+	async function addFriend() {
+		const stinky = await new createFriend(1, 400).init();
+		stinky.addMoney = function (amount) {
+			currentMoney += amount;
+		};
+		entryArray.push(stinky);
+	}
+	await addFriend();
 
-		async function addFriend() {
-			const stinky = await new createFriend(1, 400).init();
-			stinky.addMoney = function (amount) {
-				currentMoney += amount;
-			};
-			entryArray.push(stinky);
-		}
-		await addFriend();
+	// add fish
+	for (let i = 0; i < 10; i++) {
+		entryArray.push(await new createFish(Math.random() * canvas.width, Math.random() * canvas.height).init());
+	}
 
-		for (let i = 0; i < 10; i++) {
-			entryArray.push(await new createFish(Math.random() * canvas.width, Math.random() * canvas.height).init());
-		}
-		images['background'] = await loadImage(`${DATA_PATH}/images/aquarium2.jpg`);
-		images['menuBar'] = await applyAlphaMask(`${DATA_PATH}/images/menubar.gif`);
-		images['menuButton'] = await applyAlphaMask(`${DATA_PATH}/images/mbuttonu.gif`);
-		images['menuButtonReflection'] = await applyAlphaMask(`${DATA_PATH}/images/_MBREFLECTION.gif`);
+	//load other images
+	let images = {
+		background: await loadImage(`${DATA_PATH}/images/aquarium2.jpg`),
+		menuBar: await applyAlphaMask(`${DATA_PATH}/images/menubar.gif`),
+		menuButton: await applyAlphaMask(`${DATA_PATH}/images/mbuttonu.gif`),
+		menuButtonReflection: await applyAlphaMask(`${DATA_PATH}/images/_MBREFLECTION.gif`),
 
-		images['buttonSprite0'] = new createStationary(
+		buttonSprite0: new createStationary(
 			{
 				default: await loadSpriteSheet(`${DATA_PATH}/images/smallswim.gif`, 5, 10),
 			},
 			buttonPositions[0] - 13,
 			-15
-		);
-		images['buttonSprite1'] = new createStationary(
+		),
+		buttonSprite1: new createStationary(
 			{
 				default: await loadSpriteSheet(`${DATA_PATH}/images/food.gif`, 5, 10),
 			},
 			buttonPositions[1] + 10,
 			+10
-		);
-	})();
+		),
+	};
 
 	function updateAllLoop(timestamp) {
 		//first run timestamp is NaN
@@ -209,7 +211,7 @@ const init = (() => {
 				context.font = '8px serif';
 				context.fillText(`$100`, buttonPositions[1] + 22, 58);
 				images['buttonSprite1'].quality = 300;
-				images['buttonSprite1'].setAnimationIndex(foodQuality - 1);
+				images['buttonSprite1'].animationIndex = foodQuality - 1;
 				//draw food
 			}
 			if (drawButton(2)) {

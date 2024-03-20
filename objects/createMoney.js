@@ -11,14 +11,14 @@ import createObject from './object.js';
 class createMoney extends createObject {
 	constructor(x, y) {
 		super('money', {}, x, y);
-		this.setAnimationIndex(this.quality / 100 - 1);
+		this.animationIndex = this.quality / 100 - 1;
 	}
 
 	async init() {
 		const defaultFilename = `${DATA_PATH}/images/money.gif`;
 		const rows = 5;
 		const columns = 10;
-		this.image = {
+		this.imageGroup = {
 			default: await loadSpriteSheet(defaultFilename, rows, columns),
 		};
 		return this;

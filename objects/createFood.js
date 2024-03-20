@@ -13,14 +13,14 @@ class createFood extends createObject {
 	constructor(x, y, quality = 1) {
 		super('food', {}, x, y);
 		this.quality = 100 * quality;
-		this.setAnimationIndex(this.quality / 100 - 1);
+		this.animationIndex = this.quality / 100 - 1;
 	}
 
 	async init() {
 		const defaultFilename = `${DATA_PATH}/images/food.gif`;
 		const rows = 5;
 		const columns = 10;
-		this.image = {
+		this.imageGroup = {
 			default: await loadSpriteSheet(defaultFilename, rows, columns),
 		};
 		return this;
