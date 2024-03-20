@@ -39,7 +39,7 @@ const init = (async () => {
 
 			if (buttonClicked(0) && enoughMoney(FISH_COST)) {
 				currentMoney -= FISH_COST;
-				entryArray.push(await createFish(Math.random() * canvas.width, Math.random() * canvas.height));
+				entryArray.push(await new createFish(Math.random() * canvas.width, Math.random() * canvas.height).init());
 				playSound(`${DATA_PATH}/sounds/SPLASH${randomNumber(3)}.ogg`);
 			} else if (buttonClicked(1) && enoughMoney(FOOD_QUALITY_COST) && foodQuality < 3) {
 				currentMoney -= FOOD_QUALITY_COST;
