@@ -24,10 +24,13 @@ async function loadImage(filename) {
  * @returns {Promise<HTMLCanvasElement>} A promise that resolves to the canvas element with the applied alpha mask.
  */
 async function applyAlphaMask(filename) {
-	async function urlExists(url) {
-		return (await fetch(url)).status === 200;
+	function urlExists(url) {
+		const request = new XMLHttpRequest();
+		request.open('HEAD', url, false);
+		request.send();
+		return request.status === 200;
 	}
-	const maskFilename = await (async () => {
+	const maskFilename = (() => {
 		const baseFilename = filename.substring(filename.lastIndexOf('/') + 1, filename.lastIndexOf('.'));
 		if (baseFilename.startsWith('_') || baseFilename.endsWith('_')) {
 			return filename;
@@ -35,9 +38,9 @@ async function applyAlphaMask(filename) {
 
 		const filenameA = filename.substring(0, filename.lastIndexOf('.')) + '_.' + filename.substring(filename.lastIndexOf('.') + 1);
 		const filenameB = filename.substring(0, filename.lastIndexOf('/')) + '/_' + filename.substring(filename.lastIndexOf('/') + 1);
-		if (await urlExists(filenameA)) {
+		if (urlExists(filenameA)) {
 			return filenameA;
-		} else if (await urlExists(filenameB)) {
+		} else if (urlExists(filenameB)) {
 			return filenameB;
 		}
 
@@ -73,7 +76,7 @@ async function applyAlphaMask(filename) {
  * @param {number} colCount - The number of columns in the sprite sheet.
  * @returns {Promise<HTMLCanvasElement[]>} A promise that resolves with an array of canvas elements representing the sprites.
  */
-async function loadSpriteSheetByImage(image, rowCount = 1, colCount = 1) {
+function loadSpriteSheetByImage(image, rowCount = 1, colCount = 1) {
 	const sprites = [];
 
 	const spriteWidth = image.width / colCount;
@@ -110,7 +113,7 @@ async function loadSpriteSheet(filename, rowCount = 1, colCount = 1, type = 'def
 		};
 
 	const image = await applyAlphaMask(filename);
-	loadSpriteSheet.cache[filename] = await loadSpriteSheetByImage(image, rowCount, colCount);
+	loadSpriteSheet.cache[filename] = loadSpriteSheetByImage(image, rowCount, colCount);
 
 	return {
 		data: loadSpriteSheet.cache[filename],
