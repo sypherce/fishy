@@ -28,11 +28,17 @@ class createObject {
 	}
 	#animationIndex = 0;
 	#isMirrored = false;
+	#isEating = false;
 	#isTurning = false;
 	#lastState = {
 		mirrored: false,
+		eating: false,
 		turning: false,
 	};
+
+	eat() {
+		this.#isEating = true;
+	}
 
 	get width() {
 		return this.image.data[0].width;
@@ -53,6 +59,7 @@ class createObject {
 	set state(args) {
 		if (args.mirrored !== undefined) this.#isMirrored = args.mirrored;
 		if (args.turning !== undefined) this.#isTurning = args.turning;
+		if (args.eating !== undefined) this.#isEating = args.eating;
 	}
 
 	get state() {
@@ -67,6 +74,7 @@ class createObject {
 		const state = {
 			mirrored: this.#isMirrored,
 			turning: this.#isTurning,
+			eating: this.#isEating,
 		};
 		this.#lastState = state;
 		return state;
@@ -113,7 +121,7 @@ class createObject {
 
 			if (this.currentFrame >= LAST_FRAME) {
 				if (image.type == 'once') {
-					if (state.turning) this.state = { turning: false };
+					this.state = { turning: false, eating: false };
 					return LAST_FRAME;
 				}
 
@@ -129,7 +137,7 @@ class createObject {
 	}
 	//move the object towards the target
 	moveTowardsTarget(delta) {
-		if (this.state.turning) return;
+		if (this.state.turning || this.state.eating) return;
 
 		const deltaSpeed = (delta / FPS_60) * this.speed;
 		this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;

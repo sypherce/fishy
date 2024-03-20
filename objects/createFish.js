@@ -35,8 +35,11 @@ class createFish extends createObject {
 		this.imageGroup = {
 			default: await loadSpriteSheet(`${IMAGE_PATH}/smallswim.gif`, rows, columns),
 			hungry: await loadSpriteSheet(`${IMAGE_PATH}/hungryswim.gif`, rows, columns),
+			hungryTurn: await loadSpriteSheet(`${IMAGE_PATH}/hungryturn.gif`, rows, columns, 'once'),
+			hungryEat: await loadSpriteSheet(`${IMAGE_PATH}/hungryeat.gif`, rows, columns, 'once'),
 			dead: await loadSpriteSheet(`${IMAGE_PATH}/smalldie.gif`, rows, columns, 'once'),
 			turning: await loadSpriteSheet(`${IMAGE_PATH}/smallturn.gif`, rows, columns, 'once'),
+			eating: await loadSpriteSheet(`${IMAGE_PATH}/smalleat.gif`, rows, columns, 'once'),
 		};
 		return this;
 	}
@@ -46,6 +49,7 @@ class createFish extends createObject {
 	 * @param {number} quality - The quality of the food consumed.
 	 */
 	eat(quality) {
+		super.eat();
 		playSound(`${DATA_PATH}/sounds/SLURP${randomNumber(3)}.ogg`);
 		this.hp += quality;
 		if (this.hp > 100) this.hp = 100;
@@ -107,11 +111,13 @@ class createFish extends createObject {
 	 */
 	get image() {
 		const state = this.state;
-		if (state.dead) return this.imageGroup.dead;
-		if (state.turning) return this.imageGroup.turning;
-		if (state.starving) return this.imageGroup.hungry;
+		const image = this.imageGroup;
+		if (state.dead) return image.dead;
+		if (state.eating) return state.starving ? image.hungryEat : image.eating;
+		if (state.turning) return state.starving ? image.hungryTurn : image.turning;
+		if (state.starving) return image.hungry;
 
-		return this.imageGroup.default;
+		return image.default;
 	}
 }
 
