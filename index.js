@@ -212,8 +212,7 @@ const init = (async () => {
 				context.fillStyle = 'lime';
 				context.font = '8px serif';
 				context.fillText(`$100`, buttonPositions[1] + 22, 58);
-				images['buttonSprite1'].quality = 300;
-				images['buttonSprite1'].animationIndex = foodQuality - 100;
+				images['buttonSprite1'].quality = foodQuality;
 				//draw food
 			}
 			if (drawButton(2)) {
