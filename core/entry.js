@@ -11,7 +11,7 @@ const entryArray = [];
  * @returns {createObject} - The found entry object, or an empty one if no intersection is found.
  */
 function entryIntersects(type, x, y) {
-	let foundEntry = new Object();
+	let foundEntry = {};
 	const typeArray = entryArray.filter((entry) => entry.type === type);
 	typeArray.some((entry) => {
 		const xIntersect = entry.x < x && entry.x + entry.width > x;
