@@ -87,6 +87,7 @@ class createObject {
 		return this.#animationIndex;
 	}
 	set animationIndex(value) {
+		value = Math.floor(value);
 		if (this.#animationIndex !== value) {
 			this.#animationIndex = value;
 			this.currentFrame = value * this.image.columns;
