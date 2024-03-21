@@ -16,7 +16,7 @@ class createMoney extends createObject {
 
 	async init() {
 		const defaultFilename = `${DATA_PATH}/images/money.gif`;
-		const rows = 5;
+		const rows = 6;
 		const columns = 10;
 		this.imageGroup = {
 			default: await loadSpriteSheet(defaultFilename, rows, columns),
