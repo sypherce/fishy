@@ -51,8 +51,9 @@ class createFish extends createObject {
 	eat(quality) {
 		super.eat();
 		playSound(`${DATA_PATH}/sounds/SLURP${randomNumber(3)}.ogg`);
-		this.hp += quality;
-		if (this.hp > 100) this.hp = 100;
+		this.hp = Math.min(this.hp + quality, 100);
+		//this will need changed when feeding the "king potion"
+		this.quality = Math.min(this.quality + quality, 300);
 	}
 
 	/**Gets the state of the fish.
@@ -101,7 +102,7 @@ class createFish extends createObject {
 		(async () => {
 			if (this.moneyGenerationLevel >= 100) {
 				this.moneyGenerationLevel = 0;
-				entryArray.push(await new createMoney(this.x, this.y).init());
+				entryArray.push(await new createMoney(this.x, this.y, this.quality).init());
 			}
 		})();
 	}
@@ -112,6 +113,7 @@ class createFish extends createObject {
 	get image() {
 		const state = this.state;
 		const image = this.imageGroup;
+		this.animationIndex = this.quality / 100 - 1;
 		if (state.dead) return image.dead;
 		if (state.eating) return state.starving ? image.hungryEat : image.eating;
 		if (state.turning) return state.starving ? image.hungryTurn : image.turning;

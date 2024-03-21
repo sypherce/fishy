@@ -9,9 +9,9 @@ import createObject from './object.js';
  * @returns {Promise<ImageObject>} - The created object.
  */
 class createMoney extends createObject {
-	constructor(x, y) {
+	constructor(x, y, quality = 100) {
 		super('money', {}, x, y);
-		this.animationIndex = this.quality / 100 - 1;
+		this.quality = quality;
 	}
 
 	async init() {
@@ -22,6 +22,12 @@ class createMoney extends createObject {
 			default: await loadSpriteSheet(defaultFilename, rows, columns),
 		};
 		return this;
+	}
+	get image() {
+		const image = this.imageGroup;
+		this.animationIndex = this.quality / 100 - 1;
+
+		return image.default;
 	}
 }
 
