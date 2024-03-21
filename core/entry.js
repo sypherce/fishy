@@ -1,4 +1,6 @@
 'use strict';
+import createObject from './objects/createObject.js';
+
 const entryArray = [];
 
 /**Finds an entry in the entryArray that intersects with the given coordinates.
@@ -6,7 +8,7 @@ const entryArray = [];
  * @param {string} type - The type of entry to search for.
  * @param {number} x - The x-coordinate to check for intersection.
  * @param {number} y - The y-coordinate to check for intersection.
- * @returns {Object} - The found entry object, or -1 if no intersection is found.
+ * @returns {createObject} - The found entry object, or an empty one if no intersection is found.
  */
 function entryIntersects(type, x, y) {
 	let foundEntry = new Object();
