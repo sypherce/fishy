@@ -9,7 +9,7 @@ const entryArray = [];
  * @returns {Object} - The found entry object, or -1 if no intersection is found.
  */
 function entryIntersects(type, x, y) {
-	let foundEntry = -1;
+	let foundEntry = new Object();
 	const typeArray = entryArray.filter((entry) => entry.type === type);
 	typeArray.some((entry) => {
 		const xIntersect = entry.x < x && entry.x + entry.width > x;

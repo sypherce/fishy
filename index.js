@@ -82,14 +82,14 @@ const init = (async () => {
 
 		// Handle clicked enemy
 		const enemy = entryIntersects('enemy', x, y);
-		if (enemy !== -1) {
+		if (Object.keys(enemy).length) {
 			enemy.attack(weaponQuality, x, y);
 			return;
 		}
 
 		// Handle clicked money
 		const money = entryIntersects('money', x, y);
-		if (!enemyPresent && money !== -1) {
+		if (!enemyPresent && Object.keys(money).length) {
 			const moneyQuality = money.handleRemoval();
 			currentMoney += moneyQuality;
 			playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
