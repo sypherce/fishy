@@ -10,7 +10,6 @@ import createObject from './object.js';
 class createStationary extends createObject {
 	constructor(img, x, y) {
 		super('stationary', img, x, y);
-		this.animationIndex = this.quality / 100 - 1;
 	}
 
 	update(delta) {}

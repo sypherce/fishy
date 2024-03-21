@@ -95,6 +95,8 @@ class createObject {
 	}
 
 	get image() {
+		this.animationIndex = this.quality / 100 - 1;
+
 		return this.imageGroup.default;
 	}
 

@@ -23,12 +23,6 @@ class createMoney extends createObject {
 		};
 		return this;
 	}
-	get image() {
-		const image = this.imageGroup;
-		this.animationIndex = this.quality / 100 - 1;
-
-		return image.default;
-	}
 }
 
 export default createMoney;

@@ -18,7 +18,6 @@ class createFish extends createObject {
 	 */
 	constructor(x, y) {
 		super('fish', {}, x, y);
-		this.animationIndex = this.quality / 100 - 1;
 		this.hp = 100;
 		this.moneyGenerationLevel = 0;
 		this.speed = 2;

@@ -14,7 +14,6 @@ import createObject from './object.js';
 class createFriend extends createObject {
 	constructor(x, y) {
 		super('friend', {}, x, y);
-		this.animationIndex = 0;
 		this.speed = 2;
 	}
 	async init() {

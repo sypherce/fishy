@@ -9,7 +9,6 @@ import createObject from './object.js';
 class createPlayOnce extends createObject {
 	constructor(img, x, y) {
 		super('playOnce', img, x, y);
-		this.animationIndex = this.quality / 100 - 1;
 		this.drawFPS = 60;
 	}
 
