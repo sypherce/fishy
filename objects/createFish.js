@@ -6,15 +6,15 @@ import { playSound } from '../core/sound.js';
 import createMoney from './createMoney.js';
 import createObject from './object.js';
 
-/**Represents a fish object with the specified properties.
+/**Represents an object with the specified properties.
  * @class
  * @extends createObject
  */
 class createFish extends createObject {
-	/**Creates a new fish object.
+	/**Creates a new object.
 	 * @constructor
-	 * @param {number} x - The x-coordinate of the fish object.
-	 * @param {number} y - The y-coordinate of the fish object.
+	 * @param {number} x - The x-coordinate of the object.
+	 * @param {number} y - The y-coordinate of the object.
 	 */
 	constructor(x, y) {
 		super('fish', {}, x, y);
@@ -23,9 +23,9 @@ class createFish extends createObject {
 		this.speed = 2;
 	}
 
-	/**Initializes the fish object.
+	/**Initializes the object.
 	 * @async
-	 * @returns {Promise<createFish>} The initialized fish object.
+	 * @returns {Promise<createFish>} The initialized object.
 	 */
 	async init() {
 		const IMAGE_PATH = `${DATA_PATH}/images`;
@@ -43,9 +43,9 @@ class createFish extends createObject {
 		return this;
 	}
 
-	/**Increases the fish's health points (hp) by the specified quality.
+	/**Increases the health points (hp) by the specified quality.
 	 * If the resulting hp exceeds 100, it is capped at 100.
-	 * @param {number} quality - The quality of the food consumed.
+	 * @param {number} quality - The quality of the object consumed.
 	 */
 	eat(quality) {
 		super.eat();
@@ -55,8 +55,8 @@ class createFish extends createObject {
 		this.quality = Math.min(this.quality + quality, 300);
 	}
 
-	/**Gets the state of the fish.
-	 * @returns {Object} The state of the fish.
+	/**Gets the state of the object.
+	 * @returns {Object} The state of the object.
 	 */
 	get state() {
 		const state = {
@@ -71,7 +71,7 @@ class createFish extends createObject {
 		super.state = args;
 	}
 
-	/**Updates the fish's state and behavior based on the given delta time.
+	/**Updates the objects's state and behavior based on the given delta time.
 	 * @param {number} delta - The time elapsed since the last update in milliseconds.
 	 */
 	update(delta) {
@@ -106,8 +106,8 @@ class createFish extends createObject {
 		})();
 	}
 
-	/**Gets the image object for the fish based on its current state.
-	 * @returns {Object} The image object of the fish.
+	/**Gets the current image object based on its current state.
+	 * @returns {Object} The current image object.
 	 */
 	get image() {
 		const state = this.state;

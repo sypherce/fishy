@@ -1,13 +1,16 @@
 'use strict';
 import createObject from './object.js';
 
-/**Creates a stationary object with the specified properties.
- * @param {string} img - The image of the stationary object.
- * @param {number} x - The x-coordinate of the object.
- * @param {number} y - The y-coordinate of the object.
- * @returns {ImageObject} - The created object.
+/**Represents an object with the specified properties.
+ * @class
+ * @extends createObject
  */
 class createStationary extends createObject {
+	/**Creates a new object.
+	 * @constructor
+	 * @param {number} x - The x-coordinate of the object.
+	 * @param {number} y - The y-coordinate of the object.
+	 */
 	constructor(img, x, y) {
 		super('stationary', img, x, y);
 	}

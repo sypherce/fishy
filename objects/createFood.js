@@ -3,19 +3,26 @@ import { DATA_PATH } from '../core/globals.js';
 import { loadSpriteSheet } from '../core/image.js';
 import createObject from './object.js';
 
-/**Creates a food object with the specified properties.
- * @param {number} x - The x-coordinate of the object.
- * @param {number} y - The y-coordinate of the object.
- * @param {number} [quality=1] - The quality of the food object (default is 1).
- * @returns {Promise<ImageObject>} - The created object.
+/**Represents an object with the specified properties.
+ * @class
+ * @extends createObject
  */
 class createFood extends createObject {
-	constructor(x, y, quality = 1) {
+	/**Creates a new object.
+	 * @constructor
+	 * @param {number} x - The x-coordinate of the Money object.
+	 * @param {number} y - The y-coordinate of the Money object.
+	 * @param {number} [quality=100] - The quality of the Money object (default is 100).
+	 */
+	constructor(x, y, quality = 100) {
 		super('food', {}, x, y);
-		this.quality = 100 * quality;
-		this.animationIndex = this.quality / 100 - 1;
+		this.quality = quality;
 	}
 
+	/**Initializes the object.
+	 * @async
+	 * @returns {Promise<createFood>} The initialized object.
+	 */
 	async init() {
 		const defaultFilename = `${DATA_PATH}/images/food.gif`;
 		const rows = 5;

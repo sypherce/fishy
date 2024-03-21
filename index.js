@@ -14,7 +14,7 @@ const init = (async () => {
 	let currentMoney = 300;
 	let weaponQuality = 30;
 	let maxFood = 1;
-	let foodQuality = 1;
+	let foodQuality = 100;
 	const buttonPositions = [18, 88, 144, 217, 290, 363, 436];
 	const buttonEnabled = [true, true, true, false, false, false, false];
 
@@ -41,9 +41,9 @@ const init = (async () => {
 				currentMoney -= FISH_COST;
 				entryArray.push(await new createFish(Math.random() * canvas.width, Math.random() * canvas.height).init());
 				playSound(`${DATA_PATH}/sounds/SPLASH${randomNumber(3)}.ogg`);
-			} else if (buttonClicked(1) && enoughMoney(FOOD_QUALITY_COST) && foodQuality < 3) {
+			} else if (buttonClicked(1) && enoughMoney(FOOD_QUALITY_COST) && foodQuality < 300) {
 				currentMoney -= FOOD_QUALITY_COST;
-				foodQuality++;
+				foodQuality += 100;
 				playSound(`${DATA_PATH}/sounds/BUY.ogg`);
 			} else if (buttonClicked(2) && enoughMoney(MAX_FOOD_COST) && maxFood < 10) {
 				currentMoney -= MAX_FOOD_COST;
@@ -213,7 +213,7 @@ const init = (async () => {
 				context.font = '8px serif';
 				context.fillText(`$100`, buttonPositions[1] + 22, 58);
 				images['buttonSprite1'].quality = 300;
-				images['buttonSprite1'].animationIndex = foodQuality - 1;
+				images['buttonSprite1'].animationIndex = foodQuality - 100;
 				//draw food
 			}
 			if (drawButton(2)) {

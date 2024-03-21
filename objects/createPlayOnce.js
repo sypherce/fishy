@@ -1,17 +1,26 @@
 'use strict';
 import createObject from './object.js';
 
-/**Creates a playOnce object with the specified properties.
- * @param {number} x - The x-coordinate of the object.
- * @param {number} y - The y-coordinate of the object.
- * @returns {ImageObject} - The created object.
+/**Represents an object with the specified properties.
+ * @class
+ * @extends createObject
  */
+
 class createPlayOnce extends createObject {
-	constructor(img, x, y) {
+	/**Creates a new object.
+	 * @constructor
+	 * @param {number} x - The x-coordinate of the object.
+	 * @param {number} y - The y-coordinate of the object.
+	 */
+ 	constructor(img, x, y) {
 		super('playOnce', img, x, y);
 		this.drawFPS = 60;
 	}
 
+
+	/**Draws the object on the canvas.
+	 * @param {number} delta - The time difference between the current and previous frame.
+	 */
 	draw(delta) {
 		// Initialize previousFrame on first draw
 		this.previousFrame ??= this.currentFrame;

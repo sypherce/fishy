@@ -6,16 +6,25 @@ import { playSound } from '../core/sound.js';
 import createMoney from './createMoney.js';
 import createObject from './object.js';
 
-/**Creates a friend object with the specified properties.
- * @param {number} x - The x-coordinate of the object.
- * @param {number} y - The y-coordinate of the object.
- * @returns {Promise<ImageObject>} - The created object.
+/**Represents an object with the specified properties.
+ * @class
+ * @extends createObject
  */
 class createFriend extends createObject {
+	/**Creates a new object.
+	 * @constructor
+	 * @param {number} x - The x-coordinate of the object.
+	 * @param {number} y - The y-coordinate of the object.
+	 */
 	constructor(x, y) {
 		super('friend', {}, x, y);
 		this.speed = 2;
 	}
+
+	/**Initializes the object.
+	 * @async
+	 * @returns {Promise<createFriend>} The initialized object.
+	 */
 	async init() {
 		const defaultFilename = `${DATA_PATH}/images/stinky.gif`;
 		const rows = 3;
@@ -32,6 +41,9 @@ class createFriend extends createObject {
 		this.addMoney(quality);
 	}
 
+	/**Updates the objects's state and behavior based on the given delta time.
+	 * @param {number} delta - The time elapsed since the last update in milliseconds.
+	 */
 	update(delta) {
 		const state = this.state;
 		const entryFound = this.targetNearestEntry('money', 50, true);
@@ -39,6 +51,9 @@ class createFriend extends createObject {
 		this.moveTowardsTarget(delta);
 	}
 
+	/**Gets the current image object based on its current state.
+	 * @returns {Object} The current image object.
+	 */
 	get image() {
 		const state = this.state;
 		if (state.turning) {

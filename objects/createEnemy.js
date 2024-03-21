@@ -4,19 +4,27 @@ import { loadSpriteSheet } from '../core/image.js';
 import { playSound } from '../core/sound.js';
 import createObject from './object.js';
 
-/**Creates an enemy object with the specified properties.
- * @param {number} x - The x-coordinate of the object.
- * @param {number} y - The y-coordinate of the object.
- * @returns {Promise<ImageObject>} - The created object.
+/**Represents an object with the specified properties.
+ * @class
+ * @extends createObject
  */
 class createEnemy extends createObject {
+	/**Creates a new object.
+	 * @constructor
+	 * @param {number} x - The x-coordinate of the object.
+	 * @param {number} y - The y-coordinate of the object.
+	 */
 	constructor(x, y) {
 		super('enemy', {}, x, y);
 		this.hp = 100;
-		this.speed = 3;
 		this.isAttacked = false;
+		this.speed = 3;
 	}
 
+	/**Initializes the object.
+	 * @async
+	 * @returns {Promise<createEnemy>} The initialized object.
+	 */
 	async init() {
 		const defaultFilename = `${DATA_PATH}/images/balrog.gif`;
 		const rows = 2;
@@ -28,6 +36,10 @@ class createEnemy extends createObject {
 		return this;
 	}
 
+	/**Increases the health points (hp) by the specified quality.
+	 * If the resulting hp exceeds 100, it is capped at 100.
+	 * @param {number} quality - The quality of the object consumed.
+	 */
 	eat(quality) {
 		playSound(`${DATA_PATH}/sounds/converted/chomp${randomNumber(2)}.ogg`);
 		this.hp += quality;
@@ -52,10 +64,9 @@ class createEnemy extends createObject {
 		playSound(`${DATA_PATH}/sounds/POINTS${randomNumber(4)}.ogg`);
 	}
 
-	set state(args) {
-		super.state = args;
-	}
-
+	/**Gets the state of the object.
+	 * @returns {Object} The state of the object.
+	 */
 	get state() {
 		const state = {
 			...super.state,
@@ -65,7 +76,13 @@ class createEnemy extends createObject {
 		};
 		return state;
 	}
+	set state(args) {
+		super.state = args;
+	}
 
+	/**Updates the objects's state and behavior based on the given delta time.
+	 * @param {number} delta - The time elapsed since the last update in milliseconds.
+	 */
 	update(delta) {
 		const state = this.state;
 		if (state.dead) {
@@ -84,6 +101,9 @@ class createEnemy extends createObject {
 		this.hp -= 0.01;
 	}
 
+	/**Gets the current image object based on its current state.
+	 * @returns {Object} The current image object.
+	 */
 	get image() {
 		const state = this.state;
 		if (state.turning) {

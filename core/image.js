@@ -19,7 +19,6 @@ async function loadImage(filename) {
 }
 
 /**Applies an alpha mask to an image, or returns the original image if it is already an alpha image.
- *
  * @param {string} filename - The filename of the image to apply the alpha mask to.
  * @returns {Promise<HTMLCanvasElement>} A promise that resolves to the canvas element with the applied alpha mask.
  */
