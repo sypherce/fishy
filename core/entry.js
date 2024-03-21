@@ -1,5 +1,5 @@
 'use strict';
-import createObject from './objects/createObject.js';
+import createObject from '../objects/object.js';
 
 const entryArray = [];
 
