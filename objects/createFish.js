@@ -88,12 +88,17 @@ class createFish extends createObject {
 			this.y += delta / FPS_60;
 			return;
 		} else if (state.hungry || state.starving) {
-			const entryFound = this.targetNearestEntry('food', 50);
-			if (!entryFound) this.targetRandomLocation();
+			const entryRemoved = this.targetNearestEntry('food', 50);
+			if (entryRemoved) {
+				this.targetRandomLocation();
+				this.moveTowardsTargetB(delta);
+			} else {
+				this.moveTowardsTarget(delta);
+			}
 		} else {
 			this.targetRandomLocation();
+			this.moveTowardsTargetB(delta);
 		}
-		this.moveTowardsTarget(delta);
 		this.hp -= 0.1;
 
 		this.moneyGenerationLevel += 0.5;

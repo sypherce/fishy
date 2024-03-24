@@ -1,6 +1,7 @@
 'use strict';
 import { entryArray, findNearestEntry } from '../core/entry.js';
 import { canvas, context } from '../core/globals.js';
+import { moveInBezierCurve } from '../core/beizerMovement.js';
 
 const BAR_HEIGHT = 75;
 const FLOOR_HEIGHT = 40;
@@ -165,6 +166,9 @@ class createObject {
 			return this.currentFrame;
 		})();
 	}
+	targetStartingX = 0;
+	targetStartingY = 0;
+	_movementPosition = { x: 30, y: 30, speed: 0.01, t: 0 };
 
 	/**Removes the current object from the entryArray and returns its quality.
 	 * @returns {number} The quality of the removed object.
@@ -183,12 +187,32 @@ class createObject {
 		this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
 		this.y = Math.abs(this.targetY - this.y) <= deltaSpeed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * deltaSpeed;
 	}
+	/**Moves the object towards its target position using a bezier curve.
+	 * @param {number} delta - The time elapsed since the last frame.
+	 */
+	moveTowardsTargetB(delta, enabled = false) {
+		if (!enabled) {
+			this.moveTowardsTarget(delta);
+			return;
+		}
+
+		if (this.state.turning || this.state.eating) return;
+
+		const deltaSpeed = (delta / FPS_60) * this.speed;
+		this._movementPosition.speed = deltaSpeed / 1000;
+		this._movementPosition = moveInBezierCurve(this._movementPosition, this.targetStartingX, this.targetStartingY, this.targetX, this.targetY);
+		this.x = this._movementPosition.x;
+		this.y = this._movementPosition.y;
+
+		//this.x = Math.abs(this.targetX - this.x) <= deltaSpeed ? this.targetX : this.x + Math.sign(this.targetX - this.x) * deltaSpeed;
+		//this.y = Math.abs(this.targetY - this.y) <= deltaSpeed ? this.targetY : this.y + Math.sign(this.targetY - this.y) * deltaSpeed;
+	}
 
 	/**Sets a random target location for the object.
 	 * @param {boolean} horizontalOnly - Indicates whether the target location should be restricted to the horizontal axis only.
 	 */
 	targetRandomLocation(horizontalOnly) {
-		const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= this.speed && Math.abs(this.y - this.targetY) <= this.speed;
+		const isWithinSpeedDistance = Math.abs(this.x - this.targetX) <= 3 && Math.abs(this.y - this.targetY) <= 3;
 		const isTargetSetToNegativeOne = this.targetX === -1 && this.targetY === -1;
 		if (isTargetSetToNegativeOne || isWithinSpeedDistance) {
 			const x = Math.random() * (canvas.width - this.width);
@@ -225,6 +249,11 @@ class createObject {
 	 * @param {number} y - The y-coordinate of the target.
 	 */
 	setTarget(x, y) {
+		if (this.targetX == x && this.targetY == y) return;
+
+		this.targetStartingX = this.x;
+		this.targetStartingY = this.y;
+		this._movementPosition.t = 0;
 		this.targetX = x;
 		this.targetY = y;
 	}
